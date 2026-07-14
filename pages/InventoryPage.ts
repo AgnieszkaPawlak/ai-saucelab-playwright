@@ -5,6 +5,8 @@ export class InventoryPage {
   readonly page: Page;
   readonly sortDropdown: Locator;
   readonly inventoryItems: Locator;
+  readonly inventoryItemNames: Locator;
+  readonly inventoryItemPrices: Locator;
   private readonly header: HeaderComponent;
 
   constructor(page: Page, header: HeaderComponent) {
@@ -12,6 +14,8 @@ export class InventoryPage {
     this.header = header;
     this.sortDropdown = page.locator('[data-test="product-sort-container"]');
     this.inventoryItems = page.locator('.inventory_item');
+    this.inventoryItemNames = page.locator('.inventory_item_name');
+    this.inventoryItemPrices = page.locator('.inventory_item_price');
   }
 
   productAddToCartButton(productTestId: string): Locator {
@@ -32,5 +36,17 @@ export class InventoryPage {
 
   async sortBy(optionLabel: string): Promise<void> {
     await this.sortDropdown.selectOption({ label: optionLabel });
+  }
+
+  async getProductNames(): Promise<string[]> {
+    return this.inventoryItemNames.allTextContents();
+  }
+
+  firstProductName(): Locator {
+    return this.inventoryItemNames.first();
+  }
+
+  firstProductPrice(): Locator {
+    return this.inventoryItemPrices.first();
   }
 }

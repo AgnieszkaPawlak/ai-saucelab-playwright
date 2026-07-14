@@ -12,9 +12,9 @@ test.describe('Smoke — Checkout @smoke', () => {
 
   test('TC-L3-SMOKE-002: complete checkout for backpack', async ({
     checkoutFlow,
-    checkoutPage,
+    checkoutComplete,
   }) => {
     await checkoutFlow.completeCheckout(SAUCE_LABS_BACKPACK, DEFAULT_CUSTOMER);
-    await expect(checkoutPage.completeHeader).toHaveText('Thank you for your order!');
+    await expect(checkoutComplete.completeHeader).toHaveText('Thank you for your order!');
   });
 });

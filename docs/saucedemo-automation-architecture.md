@@ -533,7 +533,17 @@ Phase 2 opcjonalnie wprowadza `core/selectors.ts` jako rejestr centralny.
 | `core/BasePage.ts` | Wspólne `goto`, `waitForUrl` |
 | Parametryzacja | `TC-L3-NEG-002–004`, `TC-L3-REG-001` (sort) |
 
-**Bramka Phase 2:** smoke green + regression ≥ 10 TC automated.
+**Bramka Phase 2:** `npm run test:smoke` → 5 passed; `npm run test:regression` → 13 passed. **Zrealizowano 2026-07-14.**
+
+| Krok | Zadanie | Pliki | Stan |
+|------|---------|-------|------|
+| 2.1 | `core/BasePage.ts` | `core/BasePage.ts` | done |
+| 2.2 | Split checkout | `CheckoutStepOnePage`, `CheckoutOverviewPage`, `CheckoutCompletePage` | done |
+| 2.3 | `data/users.ts` + `AuthFlow` | `data/users.ts`, `flows/AuthFlow.ts` | done |
+| 2.4 | Fixture `loginAs(persona)` | `fixtures/sauce.fixture.ts` | done |
+| 2.5 | Suite regression | `tests/regression/*.spec.ts` | 13 TC |
+| 2.6 | Skrypt npm | `package.json` → `test:regression` | done |
+
 
 ### 11.3 Phase 3 — Full suite i NF
 
@@ -653,5 +663,5 @@ flowchart LR
 | Rola | Akcja | Data |
 |------|-------|------|
 | QA Architect | Dokument zatwierdzony | 2026-07-14 |
-| Developer / Automation Engineer | Implementacja Phase 1 | 2026-07-14 |
-| Weryfikacja | `npm run test:smoke` — 5/5 passed | 2026-07-14 |
+| Developer / Automation Engineer | Implementacja Phase 2 | 2026-07-14 |
+| Weryfikacja Phase 2 | smoke 5/5 + regression 13/13 passed | 2026-07-14 |

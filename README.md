@@ -24,22 +24,25 @@ npm install
 npx playwright install chromium
 cp .env.example .env   # opcjonalnie
 npm run test:smoke
+npm run test:regression
 ```
 
 ### Struktura
 
 ```
 saucelab/
-├── docs/                   # dokumentacja testowa
+├── core/                   # BasePage (wspólne operacje)
 ├── components/             # Component Pattern (header, sidebar)
 ├── config/credentials.ts
-├── data/                   # produkty, dane checkout
+├── data/                   # produkty, użytkownicy, dane checkout
 ├── fixtures/sauce.fixture.ts
-├── flows/                  # Flow / Facade (shopping, checkout)
+├── flows/                  # Flow / Facade (auth, shopping, checkout)
 ├── pages/                  # Page Object Model
-├── tests/smoke/            # suite Smoke (@smoke)
+├── tests/
+│   ├── smoke/              # suite Smoke (@smoke)
+│   └── regression/         # suite Regression (@regression)
 ├── playwright.config.ts
 └── .env.example
 ```
 
-**Stan:** Phase 1 — 5 testów smoke (login, shopping, checkout); warstwy components, flows, data.
+**Stan:** Phase 2 — smoke (5 TC) + regression (13 TC); warstwy core, components, flows, data.
