@@ -10,6 +10,34 @@ test.describe('Regression — Menu @regression @mutating', () => {
     await expect(loginPage.loginButton).toBeVisible();
   });
 
+  test('TC-L3-FUNC-015: sidebar All Items navigates to inventory', async ({
+    loginAsStandardUser,
+    header,
+    sidebar,
+    inventoryPage,
+  }) => {
+    await loginAsStandardUser();
+    await header.openCart();
+
+    await sidebar.navigateToAllItems();
+
+    await expect(inventoryPage.page).toHaveURL(/inventory\.html/);
+    await expect(inventoryPage.inventoryItems).toHaveCount(6);
+  });
+
+  test('TC-L3-FUNC-016: sidebar About opens Sauce Labs site', async ({
+    loginAsStandardUser,
+    sidebar,
+    page,
+  }) => {
+    await loginAsStandardUser();
+
+    await sidebar.navigateToAbout();
+
+    await page.waitForURL(/saucelabs\.com/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/saucelabs\.com/);
+  });
+
   test('TC-L3-FUNC-018: reset app state clears cart badge', async ({
     loginAsStandardUser,
     resetAppState,

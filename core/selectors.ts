@@ -46,6 +46,8 @@ export const SELECTORS = {
   sidebar: {
     menuButton: '#react-burger-menu-btn',
     menuWrap: '.bm-menu-wrap',
+    allItems: '#inventory_sidebar_link',
+    about: '#about_sidebar_link',
     resetAppState: '#reset_sidebar_link',
     logout: '#logout_sidebar_link',
   },

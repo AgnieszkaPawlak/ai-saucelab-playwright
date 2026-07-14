@@ -67,7 +67,7 @@ saucelab/
 ├── pages/                  # Page Object Model (split checkout)
 ├── tests/
 │   ├── smoke/              # suite Smoke (@smoke)
-│   ├── regression/         # suite Regression (@regression) — 25 TC
+│   ├── regression/         # suite Regression (@regression) — 28 TC
 │   ├── characterization/   # suite Persona (@characterization)
 │   └── nf/                 # NF gates + cross-browser
 ├── .github/workflows/      # CI (lint + smoke on PR; nightly suites)
@@ -76,4 +76,4 @@ saucelab/
 └── .env.example
 ```
 
-**Stan:** 42 unikalnych TC (chromium) + cross-browser NF5 (3 TC × 3 przeglądarki). Plan docelowy regression: 55 TC.
+**Stan:** 45 unikalnych TC (chromium) + cross-browser NF5 (3 TC × 3 przeglądarki). Plan docelowy regression: 55 TC.

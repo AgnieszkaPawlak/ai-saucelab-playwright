@@ -21,4 +21,8 @@ export class CheckoutOverviewPage extends BasePage {
   async finishOrder(): Promise<void> {
     await this.finishButton.click();
   }
+
+  async doubleClickFinish(): Promise<void> {
+    await this.finishButton.dblclick();
+  }
 }

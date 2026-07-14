@@ -125,4 +125,19 @@ test.describe('Regression — Checkout @regression @mutating', () => {
     await expect(checkoutStepOne.errorMessage).toContainText('Postal Code is required');
     await expect(checkoutStepOne.page).toHaveURL(/checkout-step-one\.html/);
   });
+
+  test('TC-L3-NEG-009: double-click Finish completes order once without error', async ({
+    checkoutFlow,
+    checkoutOverview,
+    checkoutComplete,
+  }) => {
+    await checkoutFlow.proceedToOverview(PRODUCTS.backpack.id, DEFAULT_CUSTOMER);
+
+    await expect(checkoutOverview.page).toHaveURL(/checkout-step-two\.html/);
+    await checkoutOverview.doubleClickFinish();
+
+    await expect(checkoutComplete.completeHeader).toHaveText('Thank you for your order!');
+    await expect(checkoutComplete.page).toHaveURL(/checkout-complete\.html/);
+    await expect(checkoutOverview.page).not.toHaveURL(/checkout-step-two\.html/);
+  });
 });

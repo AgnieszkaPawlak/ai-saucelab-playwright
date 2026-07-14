@@ -4,12 +4,16 @@ import { SELECTORS } from '../core/selectors';
 export class SidebarComponent {
   readonly page: Page;
   readonly menuButton: Locator;
+  readonly allItemsLink: Locator;
+  readonly aboutLink: Locator;
   readonly resetAppStateLink: Locator;
   readonly logoutLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.menuButton = page.locator(SELECTORS.sidebar.menuButton);
+    this.allItemsLink = page.locator(SELECTORS.sidebar.allItems);
+    this.aboutLink = page.locator(SELECTORS.sidebar.about);
     this.resetAppStateLink = page.locator(SELECTORS.sidebar.resetAppState);
     this.logoutLink = page.locator(SELECTORS.sidebar.logout);
   }
@@ -20,6 +24,16 @@ export class SidebarComponent {
       return;
     }
     await this.menuButton.click();
+  }
+
+  async navigateToAllItems(): Promise<void> {
+    await this.open();
+    await this.allItemsLink.evaluate((element) => element.click());
+  }
+
+  async navigateToAbout(): Promise<void> {
+    await this.open();
+    await this.aboutLink.evaluate((element) => element.click());
   }
 
   async resetAppState(): Promise<void> {
