@@ -554,7 +554,16 @@ Phase 2 opcjonalnie wprowadza `core/selectors.ts` jako rejestr centralny.
 | ESLint + CI | GitHub Actions wg szkicu planu §13 |
 | `@nf-a11y`, `@nf-performance` | Projekty Playwright per tag |
 
-**Bramka Phase 3:** macierz pokrycia A z `saucedemo-coverage-matrix.md` — kolumna L3 wypełniona dla Runnable TC.
+**Bramka Phase 3:** characterization 4/4 + NF 5/5 + lint green. **Zrealizowano 2026-07-14.**
+
+| Krok | Zadanie | Pliki | Stan |
+|------|---------|-------|------|
+| 3.1 | Persona strategy | `data/persona-strategy.ts` | done |
+| 3.2 | Characterization suite | `tests/characterization/persona.characterization.spec.ts` | 4 TC |
+| 3.3 | NF performance/security/a11y | `tests/nf/*.nf.spec.ts` | 5 TC |
+| 3.4 | ESLint | `eslint.config.mjs`, `npm run lint` | done |
+| 3.5 | GitHub Actions | `.github/workflows/saucedemo-tests.yml` | done |
+
 
 ### 11.4 Diagram roadmapy
 
@@ -664,4 +673,4 @@ flowchart LR
 |------|-------|------|
 | QA Architect | Dokument zatwierdzony | 2026-07-14 |
 | Developer / Automation Engineer | Implementacja Phase 2 | 2026-07-14 |
-| Weryfikacja Phase 2 | smoke 5/5 + regression 13/13 passed | 2026-07-14 |
+| Weryfikacja Phase 3 | characterization 4/4 + NF 5/5 + lint green | 2026-07-14 |

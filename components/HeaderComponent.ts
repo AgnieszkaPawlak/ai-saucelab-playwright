@@ -24,4 +24,8 @@ export class HeaderComponent {
     }
     return 0;
   }
+
+  async getCartLinkClassList(): Promise<string> {
+    return (await this.cartLink.getAttribute('class')) ?? '';
+  }
 }

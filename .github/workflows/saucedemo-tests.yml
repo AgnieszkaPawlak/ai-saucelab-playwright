@@ -1,0 +1,121 @@
+name: SauceDemo Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  schedule:
+    - cron: '0 2 * * *'
+
+env:
+  BASE_URL: https://www.saucedemo.com
+  STANDARD_USER: standard_user
+  STANDARD_PASSWORD: secret_sauce
+  LOCKED_OUT_USER: locked_out_user
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: saucelab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: saucelab/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+
+  smoke:
+    runs-on: ubuntu-latest
+    needs: lint
+    defaults:
+      run:
+        working-directory: saucelab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: saucelab/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:smoke
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-smoke
+          path: saucelab/playwright-report/
+
+  regression:
+    runs-on: ubuntu-latest
+    needs: smoke
+    if: github.event_name == 'schedule'
+    defaults:
+      run:
+        working-directory: saucelab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: saucelab/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:regression
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-regression
+          path: saucelab/playwright-report/
+
+  characterization:
+    runs-on: ubuntu-latest
+    needs: smoke
+    if: github.event_name == 'schedule'
+    defaults:
+      run:
+        working-directory: saucelab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: saucelab/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:characterization
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-characterization
+          path: saucelab/playwright-report/
+
+  nf:
+    runs-on: ubuntu-latest
+    needs: smoke
+    if: github.event_name == 'schedule'
+    defaults:
+      run:
+        working-directory: saucelab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: saucelab/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:nf
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-nf
+          path: saucelab/playwright-report/

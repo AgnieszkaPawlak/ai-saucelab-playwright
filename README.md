@@ -25,6 +25,9 @@ npx playwright install chromium
 cp .env.example .env   # opcjonalnie
 npm run test:smoke
 npm run test:regression
+npm run test:characterization
+npm run test:nf
+npm run lint
 ```
 
 ### Struktura
@@ -40,9 +43,12 @@ saucelab/
 ├── pages/                  # Page Object Model
 ├── tests/
 │   ├── smoke/              # suite Smoke (@smoke)
-│   └── regression/         # suite Regression (@regression)
+│   ├── regression/         # suite Regression (@regression)
+│   ├── characterization/   # suite Persona (@characterization)
+│   └── nf/                 # NF gates (@nf-performance, @nf-security, @nf-a11y)
+├── .github/workflows/      # CI (lint + smoke on PR; nightly suites)
 ├── playwright.config.ts
 └── .env.example
 ```
 
-**Stan:** Phase 2 — smoke (5 TC) + regression (13 TC); warstwy core, components, flows, data.
+**Stan:** Phase 3 — smoke (5) + regression (13) + characterization (4) + NF (5); ESLint + GitHub Actions CI.

@@ -17,4 +17,12 @@ export class AuthFlow {
     await this.loginAs(user);
     await this.loginPage.page.waitForURL(/inventory\.html/);
   }
+
+  async loginAsAndMeasureInventory(user: DemoUser): Promise<number> {
+    await this.loginPage.goto();
+    const startedAt = Date.now();
+    await this.loginPage.login(user.username, user.password);
+    await this.loginPage.page.waitForURL(/inventory\.html/);
+    return Date.now() - startedAt;
+  }
 }
