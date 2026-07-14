@@ -1,5 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
 import { HeaderComponent } from '../components/HeaderComponent';
+import { addToCartSelector, removeFromCartSelector, SELECTORS } from '../core/selectors';
 
 export class InventoryPage {
   readonly page: Page;
@@ -12,18 +13,18 @@ export class InventoryPage {
   constructor(page: Page, header: HeaderComponent) {
     this.page = page;
     this.header = header;
-    this.sortDropdown = page.locator('[data-test="product-sort-container"]');
-    this.inventoryItems = page.locator('.inventory_item');
-    this.inventoryItemNames = page.locator('.inventory_item_name');
-    this.inventoryItemPrices = page.locator('.inventory_item_price');
+    this.sortDropdown = page.locator(SELECTORS.inventory.sortDropdown);
+    this.inventoryItems = page.locator(SELECTORS.inventory.item);
+    this.inventoryItemNames = page.locator(SELECTORS.inventory.itemName);
+    this.inventoryItemPrices = page.locator(SELECTORS.inventory.itemPrice);
   }
 
   productAddToCartButton(productTestId: string): Locator {
-    return this.page.locator(`[data-test="add-to-cart-${productTestId}"]`);
+    return this.page.locator(addToCartSelector(productTestId));
   }
 
   productRemoveButton(productTestId: string): Locator {
-    return this.page.locator(`[data-test="remove-${productTestId}"]`);
+    return this.page.locator(removeFromCartSelector(productTestId));
   }
 
   async addProductToCart(productTestId: string): Promise<void> {

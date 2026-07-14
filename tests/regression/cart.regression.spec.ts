@@ -1,4 +1,5 @@
 import { test, expect } from '../../fixtures/sauce.fixture';
+import { CART_STATES } from '../../data/cart-states';
 import { PRODUCTS } from '../../data/products';
 
 test.describe('Regression — Cart @regression', () => {
@@ -12,7 +13,7 @@ test.describe('Regression — Cart @regression', () => {
     header,
     cartPage,
   }) => {
-    await shoppingFlow.addProductToCart(PRODUCTS.backpack.id);
+    await shoppingFlow.prepareCartState(CART_STATES.singleBackpack);
     await header.openCart();
 
     await expect(cartPage.title).toHaveText('Your Cart');
@@ -25,7 +26,7 @@ test.describe('Regression — Cart @regression', () => {
     header,
     cartPage,
   }) => {
-    await shoppingFlow.addProductToCart(PRODUCTS.backpack.id);
+    await shoppingFlow.prepareCartState(CART_STATES.singleBackpack);
     await header.openCart();
     await cartPage.removeButton(PRODUCTS.backpack.id).click();
 

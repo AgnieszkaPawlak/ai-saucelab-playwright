@@ -1,4 +1,5 @@
 import { HeaderComponent } from '../components/HeaderComponent';
+import { type CartState } from '../data/cart-states';
 import { type CheckoutCustomer } from '../data/checkout-data';
 import { CartPage } from '../pages/CartPage';
 import { CheckoutCompletePage } from '../pages/CheckoutCompletePage';
@@ -54,6 +55,20 @@ export class CheckoutFlow {
   ): Promise<void> {
     await this.shoppingFlow.addProductsToCart(productIds);
     await this.proceedToOverviewFromCart(customer);
+  }
+
+  async proceedToOverviewForCartState(
+    cartState: CartState,
+    customer: CheckoutCustomer,
+  ): Promise<void> {
+    await this.shoppingFlow.prepareCartState(cartState);
+    await this.proceedToOverviewFromCart(customer);
+  }
+
+  async startCheckoutForCartState(cartState: CartState): Promise<void> {
+    await this.shoppingFlow.prepareCartState(cartState);
+    await this.header.openCart();
+    await this.cartPage.proceedToCheckout();
   }
 
   private async proceedToOverviewFromCart(customer: CheckoutCustomer): Promise<void> {

@@ -1,5 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
 import { BasePage } from '../core/BasePage';
+import { SELECTORS } from '../core/selectors';
 
 export class CheckoutOverviewPage extends BasePage {
   readonly finishButton: Locator;
@@ -10,11 +11,11 @@ export class CheckoutOverviewPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.finishButton = page.locator('[data-test="finish"]');
-    this.cancelButton = page.locator('[data-test="cancel"]');
-    this.subtotalLabel = page.locator('[data-test="subtotal-label"]');
-    this.taxLabel = page.locator('[data-test="tax-label"]');
-    this.totalLabel = page.locator('[data-test="total-label"]');
+    this.finishButton = page.locator(SELECTORS.checkout.overview.finish);
+    this.cancelButton = page.locator(SELECTORS.checkout.overview.cancel);
+    this.subtotalLabel = page.locator(SELECTORS.checkout.overview.subtotal);
+    this.taxLabel = page.locator(SELECTORS.checkout.overview.tax);
+    this.totalLabel = page.locator(SELECTORS.checkout.overview.total);
   }
 
   async finishOrder(): Promise<void> {

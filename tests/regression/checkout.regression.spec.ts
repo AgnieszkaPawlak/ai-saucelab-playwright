@@ -1,5 +1,6 @@
 import { test, expect } from '../../fixtures/sauce.fixture';
-import { DEFAULT_CUSTOMER } from '../../data/checkout-data';
+import { CART_STATES } from '../../data/cart-states';
+import { checkoutCustomer, DEFAULT_CUSTOMER } from '../../data/checkout-data';
 import { PRODUCTS } from '../../data/products';
 
 test.describe('Regression — Checkout @regression', () => {
@@ -54,10 +55,7 @@ test.describe('Regression — Checkout @regression', () => {
     checkoutFlow,
     checkoutOverview,
   }) => {
-    await checkoutFlow.proceedToOverviewForProducts(
-      [PRODUCTS.backpack.id, PRODUCTS.bikeLight.id],
-      DEFAULT_CUSTOMER,
-    );
+    await checkoutFlow.proceedToOverviewForCartState(CART_STATES.backpackAndBikeLight, DEFAULT_CUSTOMER);
 
     await expect(checkoutOverview.subtotalLabel).toHaveText('Item total: $39.98');
   });
@@ -66,7 +64,7 @@ test.describe('Regression — Checkout @regression', () => {
     checkoutFlow,
     cartPage,
   }) => {
-    await checkoutFlow.startCheckout(PRODUCTS.backpack.id);
+    await checkoutFlow.startCheckoutForCartState(CART_STATES.singleBackpack);
     await checkoutFlow.cancelFromStepOne();
 
     await expect(cartPage.page).toHaveURL(/cart\.html/);
@@ -77,7 +75,7 @@ test.describe('Regression — Checkout @regression', () => {
     checkoutFlow,
     checkoutStepOne,
   }) => {
-    await checkoutFlow.startCheckout(PRODUCTS.backpack.id);
+    await checkoutFlow.startCheckoutForCartState(CART_STATES.singleBackpack);
     await checkoutStepOne.continueToOverview();
 
     await expect(checkoutStepOne.errorMessage).toContainText('First Name is required');
@@ -88,8 +86,18 @@ test.describe('Regression — Checkout @regression', () => {
     checkoutFlow,
     checkoutStepOne,
   }) => {
-    await checkoutFlow.startCheckout(PRODUCTS.backpack.id);
-    await checkoutStepOne.firstNameInput.fill(DEFAULT_CUSTOMER.firstName);
+    const customer = checkoutCustomer()
+      .withFirstName(DEFAULT_CUSTOMER.firstName)
+      .withLastName('')
+      .withPostalCode('')
+      .build();
+
+    await checkoutFlow.startCheckoutForCartState(CART_STATES.singleBackpack);
+    await checkoutStepOne.fillCustomerInfo(
+      customer.firstName,
+      customer.lastName,
+      customer.postalCode,
+    );
     await checkoutStepOne.continueToOverview();
 
     await expect(checkoutStepOne.errorMessage).toContainText('Last Name is required');
@@ -100,9 +108,18 @@ test.describe('Regression — Checkout @regression', () => {
     checkoutFlow,
     checkoutStepOne,
   }) => {
-    await checkoutFlow.startCheckout(PRODUCTS.backpack.id);
-    await checkoutStepOne.firstNameInput.fill(DEFAULT_CUSTOMER.firstName);
-    await checkoutStepOne.lastNameInput.fill(DEFAULT_CUSTOMER.lastName);
+    const customer = checkoutCustomer()
+      .withFirstName(DEFAULT_CUSTOMER.firstName)
+      .withLastName(DEFAULT_CUSTOMER.lastName)
+      .withPostalCode('')
+      .build();
+
+    await checkoutFlow.startCheckoutForCartState(CART_STATES.singleBackpack);
+    await checkoutStepOne.fillCustomerInfo(
+      customer.firstName,
+      customer.lastName,
+      customer.postalCode,
+    );
     await checkoutStepOne.continueToOverview();
 
     await expect(checkoutStepOne.errorMessage).toContainText('Postal Code is required');

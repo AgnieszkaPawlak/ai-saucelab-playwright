@@ -1,5 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
 import { BasePage } from '../core/BasePage';
+import { removeFromCartSelector, SELECTORS } from '../core/selectors';
 
 export class CartPage extends BasePage {
   readonly title: Locator;
@@ -9,10 +10,10 @@ export class CartPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.title = page.locator('[data-test="title"]');
-    this.cartItems = page.locator('.cart_item');
-    this.checkoutButton = page.locator('[data-test="checkout"]');
-    this.continueShoppingButton = page.locator('[data-test="continue-shopping"]');
+    this.title = page.locator(SELECTORS.cart.title);
+    this.cartItems = page.locator(SELECTORS.cart.item);
+    this.checkoutButton = page.locator(SELECTORS.cart.checkout);
+    this.continueShoppingButton = page.locator(SELECTORS.cart.continueShopping);
   }
 
   cartItemByName(productName: string): Locator {
@@ -20,7 +21,7 @@ export class CartPage extends BasePage {
   }
 
   removeButton(productTestId: string): Locator {
-    return this.page.locator(`[data-test="remove-${productTestId}"]`);
+    return this.page.locator(removeFromCartSelector(productTestId));
   }
 
   async proceedToCheckout(): Promise<void> {

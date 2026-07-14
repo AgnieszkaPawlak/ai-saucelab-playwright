@@ -1,11 +1,2 @@
-export type CheckoutCustomer = {
-  firstName: string;
-  lastName: string;
-  postalCode: string;
-};
-
-export const DEFAULT_CUSTOMER: CheckoutCustomer = {
-  firstName: 'Test',
-  lastName: 'User',
-  postalCode: '12345',
-};
+export type { CheckoutCustomer } from './checkout.builder';
+export { checkoutCustomer, DEFAULT_CUSTOMER } from './checkout.builder';

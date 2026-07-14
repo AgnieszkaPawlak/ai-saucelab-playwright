@@ -1,4 +1,5 @@
 import { HeaderComponent } from '../components/HeaderComponent';
+import { type CartState } from '../data/cart-states';
 import { InventoryPage } from '../pages/InventoryPage';
 
 export class ShoppingFlow {
@@ -29,6 +30,10 @@ export class ShoppingFlow {
     for (const productId of productIds) {
       await this.addProductToCart(productId);
     }
+  }
+
+  async prepareCartState(cartState: CartState): Promise<void> {
+    await this.addProductsToCart(cartState.productIds);
   }
 
   async removeProductFromInventory(productId: string): Promise<void> {

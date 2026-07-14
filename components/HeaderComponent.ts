@@ -1,4 +1,5 @@
 import { type Locator, type Page } from '@playwright/test';
+import { SELECTORS } from '../core/selectors';
 
 export class HeaderComponent {
   readonly page: Page;
@@ -8,9 +9,9 @@ export class HeaderComponent {
 
   constructor(page: Page) {
     this.page = page;
-    this.title = page.locator('[data-test="title"]');
-    this.cartLink = page.locator('.shopping_cart_link');
-    this.cartBadge = page.locator('.shopping_cart_badge');
+    this.title = page.locator(SELECTORS.header.title);
+    this.cartLink = page.locator(SELECTORS.header.cartLink);
+    this.cartBadge = page.locator(SELECTORS.header.cartBadge);
   }
 
   async openCart(): Promise<void> {

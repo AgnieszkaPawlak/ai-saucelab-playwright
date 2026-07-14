@@ -1,4 +1,5 @@
 import { type Locator, type Page } from '@playwright/test';
+import { SELECTORS } from '../core/selectors';
 
 export class LoginPage {
   readonly page: Page;
@@ -9,10 +10,10 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.usernameInput = page.locator('#user-name');
-    this.passwordInput = page.locator('#password');
-    this.loginButton = page.locator('#login-button');
-    this.errorMessage = page.locator('[data-test="error"]');
+    this.usernameInput = page.locator(SELECTORS.login.username);
+    this.passwordInput = page.locator(SELECTORS.login.password);
+    this.loginButton = page.locator(SELECTORS.login.loginButton);
+    this.errorMessage = page.locator(SELECTORS.login.error);
   }
 
   async goto(): Promise<void> {

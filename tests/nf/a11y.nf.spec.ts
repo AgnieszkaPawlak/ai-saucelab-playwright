@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '../../fixtures/sauce.fixture';
-import { PRODUCTS } from '../../data/products';
+import { CART_STATES } from '../../data/cart-states';
 
 test.describe('NF — Accessibility @nf-a11y', () => {
   test('TC-L3-S1-001: login page has no critical axe violations', async ({ loginPage, page }) => {
@@ -25,7 +25,7 @@ test.describe('NF — Accessibility @nf-a11y', () => {
   }) => {
     await loginAsStandardUser();
     await resetAppState();
-    await checkoutFlow.startCheckout(PRODUCTS.backpack.id);
+    await checkoutFlow.startCheckoutForCartState(CART_STATES.singleBackpack);
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa'])

@@ -1,4 +1,5 @@
 import { type Locator, type Page } from '@playwright/test';
+import { SELECTORS } from '../core/selectors';
 
 export class SidebarComponent {
   readonly page: Page;
@@ -8,13 +9,13 @@ export class SidebarComponent {
 
   constructor(page: Page) {
     this.page = page;
-    this.menuButton = page.locator('#react-burger-menu-btn');
-    this.resetAppStateLink = page.locator('#reset_sidebar_link');
-    this.logoutLink = page.locator('#logout_sidebar_link');
+    this.menuButton = page.locator(SELECTORS.sidebar.menuButton);
+    this.resetAppStateLink = page.locator(SELECTORS.sidebar.resetAppState);
+    this.logoutLink = page.locator(SELECTORS.sidebar.logout);
   }
 
   async open(): Promise<void> {
-    const isMenuOpen = await this.page.locator('.bm-menu-wrap').getAttribute('aria-hidden');
+    const isMenuOpen = await this.page.locator(SELECTORS.sidebar.menuWrap).getAttribute('aria-hidden');
     if (isMenuOpen === 'false') {
       return;
     }
