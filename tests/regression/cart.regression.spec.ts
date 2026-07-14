@@ -19,4 +19,24 @@ test.describe('Regression — Cart @regression', () => {
     await expect(cartPage.cartItemByName(PRODUCTS.backpack.name)).toBeVisible();
     await expect(cartPage.checkoutButton).toBeEnabled();
   });
+
+  test('TC-L3-FUNC-014: remove product from cart page empties cart', async ({
+    shoppingFlow,
+    header,
+    cartPage,
+  }) => {
+    await shoppingFlow.addProductToCart(PRODUCTS.backpack.id);
+    await header.openCart();
+    await cartPage.removeButton(PRODUCTS.backpack.id).click();
+
+    await expect(cartPage.cartItems).toHaveCount(0);
+    await expect(cartPage.cartItemByName(PRODUCTS.backpack.name)).not.toBeVisible();
+  });
+
+  test('TC-L3-NEG-008: empty cart shows no cart items', async ({ cartPage }) => {
+    await cartPage.page.goto('/cart.html');
+
+    await expect(cartPage.page).toHaveURL(/cart\.html/);
+    await expect(cartPage.cartItems).toHaveCount(0);
+  });
 });

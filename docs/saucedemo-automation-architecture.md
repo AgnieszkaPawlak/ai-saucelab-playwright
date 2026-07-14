@@ -533,7 +533,7 @@ Phase 2 opcjonalnie wprowadza `core/selectors.ts` jako rejestr centralny.
 | `core/BasePage.ts` | Wspólne `goto`, `waitForUrl` |
 | Parametryzacja | `TC-L3-NEG-002–004`, `TC-L3-REG-001` (sort) |
 
-**Bramka Phase 2:** `npm run test:smoke` → 5 passed; `npm run test:regression` → 13 passed. **Zrealizowano 2026-07-14.**
+**Bramka Phase 2:** `npm run test:smoke` → 5 passed; `npm run test:regression` → 25 passed. **Zrealizowano 2026-07-14.**
 
 | Krok | Zadanie | Pliki | Stan |
 |------|---------|-------|------|
@@ -541,8 +541,9 @@ Phase 2 opcjonalnie wprowadza `core/selectors.ts` jako rejestr centralny.
 | 2.2 | Split checkout | `CheckoutStepOnePage`, `CheckoutOverviewPage`, `CheckoutCompletePage` | done |
 | 2.3 | `data/users.ts` + `AuthFlow` | `data/users.ts`, `flows/AuthFlow.ts` | done |
 | 2.4 | Fixture `loginAs(persona)` | `fixtures/sauce.fixture.ts` | done |
-| 2.5 | Suite regression | `tests/regression/*.spec.ts` | 13 TC |
+| 2.5 | Suite regression | `tests/regression/*.spec.ts` | 25 TC |
 | 2.6 | Skrypt npm | `package.json` → `test:regression` | done |
+| 2.7 | Rozszerzenie regression | menu, cart, checkout, inventory | done |
 
 
 ### 11.3 Phase 3 — Full suite i NF
@@ -564,8 +565,25 @@ Phase 2 opcjonalnie wprowadza `core/selectors.ts` jako rejestr centralny.
 | 3.4 | ESLint | `eslint.config.mjs`, `npm run lint` | done |
 | 3.5 | GitHub Actions | `.github/workflows/saucedemo-tests.yml` | done |
 
+### 11.4 Phase 4 — Cross-browser (NF5)
 
-### 11.4 Diagram roadmapy
+| Zadanie | Opis |
+|---------|------|
+| Projekty Playwright | `chromium`, `firefox`, `webkit` w `playwright.config.ts` |
+| Suite NF5 | `tests/nf/cross-browser.nf.spec.ts` — `TC-L3-NF5-001–003` |
+| Izolacja chromium | Smoke/regression/characterization/NF bazowe → `--project=chromium` |
+| Skrypt | `npm run test:cross-browser` — 3 TC × 3 przeglądarki |
+
+**Bramka Phase 4:** `npm run test:cross-browser` → 9 passed (3 TC × 3 browsers).
+
+| Krok | Zadanie | Pliki | Stan |
+|------|---------|-------|------|
+| 4.1 | Projekty firefox/webkit | `playwright.config.ts` | done |
+| 4.2 | Testy NF5 | `tests/nf/cross-browser.nf.spec.ts` | done |
+| 4.3 | Skrypt npm | `test:cross-browser` | done |
+| 4.4 | CI nightly | `.github/workflows/saucedemo-tests.yml` | done |
+
+### 11.5 Diagram roadmapy
 
 ```mermaid
 gantt
@@ -673,4 +691,4 @@ flowchart LR
 |------|-------|------|
 | QA Architect | Dokument zatwierdzony | 2026-07-14 |
 | Developer / Automation Engineer | Implementacja Phase 2 | 2026-07-14 |
-| Weryfikacja Phase 3 | characterization 4/4 + NF 5/5 + lint green | 2026-07-14 |
+| Weryfikacja Phase 4 | cross-browser 9/9 passed | 2026-07-14 |

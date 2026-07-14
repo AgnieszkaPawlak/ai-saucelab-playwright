@@ -45,6 +45,18 @@ export class CheckoutFlow {
 
   async proceedToOverview(productId: string, customer: CheckoutCustomer): Promise<void> {
     await this.shoppingFlow.addProductToCart(productId);
+    await this.proceedToOverviewFromCart(customer);
+  }
+
+  async proceedToOverviewForProducts(
+    productIds: readonly string[],
+    customer: CheckoutCustomer,
+  ): Promise<void> {
+    await this.shoppingFlow.addProductsToCart(productIds);
+    await this.proceedToOverviewFromCart(customer);
+  }
+
+  private async proceedToOverviewFromCart(customer: CheckoutCustomer): Promise<void> {
     await this.header.openCart();
     await this.cartPage.proceedToCheckout();
     await this.checkoutStepOne.fillCustomerInfo(

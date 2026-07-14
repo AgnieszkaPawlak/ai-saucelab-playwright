@@ -112,8 +112,9 @@ jobs:
           cache: npm
           cache-dependency-path: saucelab/package-lock.json
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps
       - run: npm run test:nf
+      - run: npm run test:cross-browser
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

@@ -27,6 +27,7 @@ npm run test:smoke
 npm run test:regression
 npm run test:characterization
 npm run test:nf
+npm run test:cross-browser
 npm run lint
 ```
 
@@ -51,4 +52,4 @@ saucelab/
 └── .env.example
 ```
 
-**Stan:** Phase 3 — smoke (5) + regression (13) + characterization (4) + NF (5); ESLint + GitHub Actions CI.
+**Stan:** 39 TC (chromium) + cross-browser NF5 (3 TC × 3 przeglądarki).

@@ -25,6 +25,16 @@ export class ShoppingFlow {
     throw new Error(`Product "${productId}" not found on inventory page`);
   }
 
+  async addProductsToCart(productIds: readonly string[]): Promise<void> {
+    for (const productId of productIds) {
+      await this.addProductToCart(productId);
+    }
+  }
+
+  async removeProductFromInventory(productId: string): Promise<void> {
+    await this.inventoryPage.productRemoveButton(productId).click();
+  }
+
   async getCartItemCount(): Promise<number> {
     return this.header.getCartItemCount();
   }

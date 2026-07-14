@@ -38,6 +38,30 @@ test.describe('Regression — Checkout @regression', () => {
     await expect(checkoutComplete.completeHeader).toHaveText('Thank you for your order!');
   });
 
+  test('TC-L3-FUNC-008: back home returns to inventory after order', async ({
+    checkoutFlow,
+    checkoutComplete,
+    inventoryPage,
+  }) => {
+    await checkoutFlow.completeCheckout(PRODUCTS.backpack.id, DEFAULT_CUSTOMER);
+    await checkoutComplete.backToProducts();
+
+    await expect(inventoryPage.page).toHaveURL(/inventory\.html/);
+    await expect(inventoryPage.inventoryItems).toHaveCount(6);
+  });
+
+  test('TC-L3-FUNC-019: multi-item checkout shows combined subtotal', async ({
+    checkoutFlow,
+    checkoutOverview,
+  }) => {
+    await checkoutFlow.proceedToOverviewForProducts(
+      [PRODUCTS.backpack.id, PRODUCTS.bikeLight.id],
+      DEFAULT_CUSTOMER,
+    );
+
+    await expect(checkoutOverview.subtotalLabel).toHaveText('Item total: $39.98');
+  });
+
   test('TC-L3-FUNC-020: cancel checkout returns to cart with product', async ({
     checkoutFlow,
     cartPage,
@@ -57,6 +81,31 @@ test.describe('Regression — Checkout @regression', () => {
     await checkoutStepOne.continueToOverview();
 
     await expect(checkoutStepOne.errorMessage).toContainText('First Name is required');
+    await expect(checkoutStepOne.page).toHaveURL(/checkout-step-one\.html/);
+  });
+
+  test('TC-L3-NEG-006: checkout step one rejects missing last name', async ({
+    checkoutFlow,
+    checkoutStepOne,
+  }) => {
+    await checkoutFlow.startCheckout(PRODUCTS.backpack.id);
+    await checkoutStepOne.firstNameInput.fill(DEFAULT_CUSTOMER.firstName);
+    await checkoutStepOne.continueToOverview();
+
+    await expect(checkoutStepOne.errorMessage).toContainText('Last Name is required');
+    await expect(checkoutStepOne.page).toHaveURL(/checkout-step-one\.html/);
+  });
+
+  test('TC-L3-NEG-007: checkout step one rejects missing postal code', async ({
+    checkoutFlow,
+    checkoutStepOne,
+  }) => {
+    await checkoutFlow.startCheckout(PRODUCTS.backpack.id);
+    await checkoutStepOne.firstNameInput.fill(DEFAULT_CUSTOMER.firstName);
+    await checkoutStepOne.lastNameInput.fill(DEFAULT_CUSTOMER.lastName);
+    await checkoutStepOne.continueToOverview();
+
+    await expect(checkoutStepOne.errorMessage).toContainText('Postal Code is required');
     await expect(checkoutStepOne.page).toHaveURL(/checkout-step-one\.html/);
   });
 });

@@ -14,16 +14,20 @@ export class SidebarComponent {
   }
 
   async open(): Promise<void> {
+    const isMenuOpen = await this.page.locator('.bm-menu-wrap').getAttribute('aria-hidden');
+    if (isMenuOpen === 'false') {
+      return;
+    }
     await this.menuButton.click();
   }
 
   async resetAppState(): Promise<void> {
     await this.open();
-    await this.resetAppStateLink.click();
+    await this.resetAppStateLink.evaluate((element) => element.click());
   }
 
   async logout(): Promise<void> {
     await this.open();
-    await this.logoutLink.click();
+    await this.logoutLink.evaluate((element) => element.click());
   }
 }
