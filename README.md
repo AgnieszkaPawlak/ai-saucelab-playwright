@@ -36,7 +36,7 @@ npm run lint
 | Środowisko | Hasło | Usernames |
 |------------|-------|-----------|
 | Lokalnie | `.env` → `SAUCE_PASSWORD` | `.env` (domyślnie publiczne demo) |
-| CI | GitHub Secret **`SAUCE_PASSWORD`** (Actions → Secrets, not Variables) | alias `STANDARD_PASSWORD`; fallback + warning if empty |
+| CI | Environment **`SAUCE_PASSWORD`** → secret `SAUCE_PASSWORD` | Workflow uses `environment: SAUCE_PASSWORD` |
 
 ### Wykonywanie (two-lane)
 
