@@ -20,11 +20,11 @@ Implementacja odbywa się **małymi krokami** (Phase 1 → Phase 4 + refactor). 
 | Metryka | Wartość |
 |---------|---------|
 | Smoke (`@smoke`) | 5 passed |
-| Regression (`@regression`) | **25 passed** (bramka Phase 2; plan docelowy: 55 TC) |
+| Regression (`@regression`) | **28 passed** (bramka Phase 2+; plan docelowy: 55 TC) |
 | Characterization | 4 passed |
 | NF (chromium) | 8 passed |
 | Cross-browser NF5 | 9 passed (3 TC × 3 browsers) |
-| **Łącznie unikalnych TC** | **42** (+ 9 uruchomień cross-browser) |
+| **Łącznie unikalnych TC** | **45** (+ 9 uruchomień cross-browser) |
 | Warstwy kodu | `core/`, `components/`, `flows/`, `data/`, `pages/`, `fixtures/`, `tests/{smoke,regression,characterization,nf}/` |
 | Wykonywanie | Two-lane `@readonly` / `@mutating` |
 | CI | lint + smoke (PR); nightly: regression, characterization, nf, cross-browser |
@@ -61,7 +61,7 @@ SauceDemo (Swag Labs) to statyczna SPA bez publicznego REST API. Stan koszyka i 
 | POM: checkout (split) | `CheckoutStepOnePage`, `CheckoutOverviewPage`, `CheckoutCompletePage` | done (Phase 2) |
 | POM: `SidebarComponent`, `HeaderComponent` | `components/` | done |
 | Suite Smoke (**15 TC** plan) | `tests/smoke/` | **5 TC** zautomatyzowanych (Phase 1 gate) |
-| Suite Regression (**55 TC** plan) | `tests/regression/` | **25 TC** zautomatyzowanych (Phase 2 gate); ~30 TC w backlogu |
+| Suite Regression (**55 TC** plan) | `tests/regression/` | **28 TC** zautomatyzowanych; ~27 TC w backlogu |
 | Charakteryzacja person | `tests/characterization/` | 4 TC (QUIRK-001–004) |
 | NF + cross-browser | `tests/nf/` | 5 + 9 uruchomień NF5 |
 | NF6 Utrzymywalność | Ten dokument + separacja warstw + `core/selectors.ts` | done |
@@ -635,7 +635,7 @@ Test `TC-L3-SMOKE-002`:
 
 | Priorytet | Zadanie | Cel | Stan |
 |-----------|---------|-----|------|
-| P1 | Rozszerzenie regression | 25 → ~55 TC (`FUNC-015/016`, `NEG-009`, …) | backlog |
+| P1 | Rozszerzenie regression | 25 → ~55 TC (`FUNC-015/016`, `NEG-009`, …) | **w toku** — 28/55 (2026-07-14) |
 | P2 | Visual regression | `TC-L3-S2-001/002` | **done** 2026-07-14 |
 | P3 | Characterization | `TC-L3-PERS-005` | backlog |
 | P4 | Pozostałe NF | `NF1-002`, `NF2-*`, `SEC-003`, `S6-001` | backlog |
@@ -647,7 +647,8 @@ Test `TC-L3-SMOKE-002`:
 | Suite S2 | `tests/nf/visual.nf.spec.ts` | `TC-L3-S2-001`, `002`, `003` (login) |
 | Baseline PNG | `tests/nf/visual.nf.spec.ts-snapshots/` | commit w repo |
 | Skrypt | `npm run test:nf-visual` | done |
-| CI | w ramach `npm run test:nf` (nightly) | `@nf-visual @mutating` |
+| CI | w ramach `npm run test:nf` (nightly) | `@nf-visual` (`@readonly` login + `@mutating` inventory) |
+| Snapshoty | `playwright.config.ts` → `snapshotPathTemplate` bez `{platform}` | Linux CI + Windows dev |
 | PERS-004 | annotation `sort-visible` bez duplikatu attach | done |
 
 **Bramka:** `npm run test:nf-visual` → 3 passed (chromium).

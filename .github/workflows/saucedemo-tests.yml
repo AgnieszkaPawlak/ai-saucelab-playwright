@@ -150,4 +150,6 @@ jobs:
         if: failure()
         with:
           name: playwright-report-nf
-          path: playwright-report/
+          path: |
+            playwright-report/
+            test-results/

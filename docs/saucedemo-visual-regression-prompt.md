@@ -80,7 +80,7 @@ test.describe('NF — Visual regression @nf-visual @mutating', () => {
 
 ### Konfiguracja
 
-- [ ] `playwright.config.ts`: rozważ `snapshotPathTemplate` z `{testFileDir}/{testFileName}-snapshots/{arg}{ext}` (domyślne OK)
+- [ ] `playwright.config.ts`: `snapshotPathTemplate` bez `{platform}` — wspólny baseline Windows dev / Linux CI
 - [ ] Viewport: użyj `devices['Desktop Chrome']` (1280×720) — **nie zmieniaj** bez aktualizacji baseline
 - [ ] Wyłącz animacje jeśli flaky: `page.emulateMedia({ reducedMotion: 'reduce' })` w `beforeEach` (opcjonalnie)
 

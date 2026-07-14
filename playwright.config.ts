@@ -15,6 +15,9 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers,
+  // Omit {platform} so Windows dev and Linux CI share one baseline (maxDiffPixelRatio in visual specs).
+  snapshotPathTemplate:
+    '{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}-{projectName}{ext}',
   reporter: [['html', { open: 'never' }], ['list']],
   use: {
     baseURL,
