@@ -8,7 +8,7 @@ Identyfikatory testów, Gherkin, kod i komunikaty aplikacji pozostają po angiel
 Pełna dokumentacja testowa znajduje się w katalogu **[docs/](docs/README.md)**:
 
 - Plan i strategia testów (85 przypadków)
-- Architektura automatyzacji (warstwy, wzorce, roadmapa Phase 1–3)
+- Architektura automatyzacji (warstwy, wzorce, roadmapa Phase 1–4 + refactor)
 - Rejestr błędów i osobliwości person
 - Biblioteka promptów GenAI (ISTQB CT-GenAI)
 - Macierze pokrycia
@@ -27,8 +27,15 @@ npm run test:smoke
 npm run test:regression
 npm run test:characterization
 npm run test:nf
+npm run test:nf-visual
 npm run test:cross-browser
 npm run lint
+```
+
+Aktualizacja baseline visual (świadoma zmiana UI):
+
+```bash
+npx playwright test --grep @nf-visual --project=chromium --update-snapshots
 ```
 
 ### Credentials
@@ -51,21 +58,22 @@ npm run lint
 
 ```
 saucelab/
-├── core/                   # BasePage (wspólne operacje)
+├── core/                   # BasePage, selectors.ts (rejestr lokatorów)
 ├── components/             # Component Pattern (header, sidebar)
 ├── config/credentials.ts
-├── data/                   # produkty, użytkownicy, dane checkout
+├── data/                   # products, users, checkout.builder, cart-states, persona-strategy
 ├── fixtures/sauce.fixture.ts
 ├── flows/                  # Flow / Facade (auth, shopping, checkout)
-├── pages/                  # Page Object Model
+├── pages/                  # Page Object Model (split checkout)
 ├── tests/
 │   ├── smoke/              # suite Smoke (@smoke)
-│   ├── regression/         # suite Regression (@regression)
+│   ├── regression/         # suite Regression (@regression) — 25 TC
 │   ├── characterization/   # suite Persona (@characterization)
-│   └── nf/                 # NF gates (@nf-performance, @nf-security, @nf-a11y)
+│   └── nf/                 # NF gates + cross-browser
 ├── .github/workflows/      # CI (lint + smoke on PR; nightly suites)
+├── eslint.config.mjs
 ├── playwright.config.ts
 └── .env.example
 ```
 
-**Stan:** 39 TC (chromium) + cross-browser NF5 (3 TC × 3 przeglądarki).
+**Stan:** 42 unikalnych TC (chromium) + cross-browser NF5 (3 TC × 3 przeglądarki). Plan docelowy regression: 55 TC.

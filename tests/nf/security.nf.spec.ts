@@ -2,11 +2,11 @@ import { test, expect } from '../../fixtures/sauce.fixture';
 import { credentials } from '../../config/credentials';
 
 test.describe('NF — Security @nf-security @readonly', () => {
-  test('TC-L3-SEC-001: inventory URL requires authentication', async ({ page }) => {
+  test('TC-L3-SEC-001: inventory URL requires authentication', async ({ page, loginPage }) => {
     await page.goto('/inventory.html');
 
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.locator('#login-button')).toBeVisible();
+    await expect(loginPage.loginButton).toBeVisible();
   });
 
   test('TC-L3-SEC-002: SQL injection in username fails safely', async ({ loginPage }) => {

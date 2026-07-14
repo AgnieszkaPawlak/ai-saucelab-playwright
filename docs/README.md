@@ -12,6 +12,7 @@ Identyfikatory testów, Gherkin, kod i komunikaty aplikacji pozostają po angiel
 | [saucedemo-test-plan.md](saucedemo-test-plan.md) | Plan i strategia testów (85 przypadków) |
 | [saucedemo-bugs.md](saucedemo-bugs.md) | Błędy i osobliwości person |
 | [saucedemo-genai-prompts.md](saucedemo-genai-prompts.md) | Biblioteka promptów GenAI (ISTQB CT-GenAI) |
+| [saucedemo-visual-regression-prompt.md](saucedemo-visual-regression-prompt.md) | Prompt implementacji visual regression (S2-001/002) |
 | [saucedemo-coverage-matrix.md](saucedemo-coverage-matrix.md) | Macierze pokrycia |
 
 **Aplikacja:** [SauceDemo (Swag Labs)](https://www.saucedemo.com/)

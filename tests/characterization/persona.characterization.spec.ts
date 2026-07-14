@@ -68,7 +68,6 @@ test.describe('Characterization — Personas @characterization @mutating', () =>
   test('TC-L3-PERS-004: visual_user inventory sort control state is documented', async ({
     loginAs,
     inventoryPage,
-    page,
   }) => {
     await loginAs('visual');
 
@@ -79,11 +78,5 @@ test.describe('Characterization — Personas @characterization @mutating', () =>
     });
 
     await expect(inventoryPage.sortDropdown).toBeVisible();
-
-    const screenshot = await page.screenshot({ fullPage: true });
-    await test.info().attach('visual-user-inventory', {
-      body: screenshot,
-      contentType: 'image/png',
-    });
   });
 });

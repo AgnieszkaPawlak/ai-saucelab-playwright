@@ -1,9 +1,9 @@
 # SauceDemo — architektura automatyzacji testów
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Date:** 2026-07-14  
 **Author:** Senior QA Architect  
-**Status:** Zatwierdzony do implementacji fazowej  
+**Status:** Zatwierdzony — Phase 1–4 + refactor zgodne z kodem  
 **Environment:** `https://www.saucedemo.com/` (publiczne demo SPA)  
 **Powiązane:** [Plan testów](saucedemo-test-plan.md) · [Macierze pokrycia](saucedemo-coverage-matrix.md) · [Rejestr błędów](saucedemo-bugs.md) · [README automatyzacji](../README.md)
 
@@ -13,25 +13,28 @@
 
 Niniejszy dokument definiuje **docelową architekturę warstwową** frameworka Playwright + TypeScript dla SauceLab. Architektura rozszerza istniejący scaffold (POM + fixtures) o warstwy **Components**, **Flows** i **Data**, zachowując zgodność z planem testów (85 TC) i zasadami **SOLID**.
 
-Implementacja odbywa się **małymi krokami** (Phase 1 → Phase 2 → Phase 3). Każda faza dostarcza działający, zielony subset testów bez blokowania kolejnych iteracji.
+Implementacja odbywa się **małymi krokami** (Phase 1 → Phase 4 + refactor). Każda faza dostarcza działający, zielony subset testów bez blokowania kolejnych iteracji.
 
-### Stan wyjściowy (audyt 2026-07-14)
-
-| Metryka | Wartość |
-|---------|---------|
-| Testy smoke (`@smoke`) | 5 passed, 0 skipped |
-| Warstwy kodu | `pages/`, `fixtures/`, `config/`, `tests/smoke/` |
-| Weryfikacja żywej aplikacji | Lokatory poprawne; ryzyko flakiness ze względu na współdzielony stan koszyka |
-| Brakujące elementy POM (wg planu) | `HeaderComponent`, Flow Objects, reset stanu aplikacji |
-
-### Stan docelowy (po Phase 1)
+### Stan implementacji (audyt 2026-07-14, zsynchronizowany z kodem)
 
 | Metryka | Wartość |
 |---------|---------|
-| Testy smoke | 5 passed, 0 skipped |
-| Nowe warstwy | `components/`, `flows/`, `data/` |
-| Stabilność | `resetAppState` w fixture przed testami mutującymi |
-| Smoke flow | login → add to cart → checkout → complete (logout opcjonalny) |
+| Smoke (`@smoke`) | 5 passed |
+| Regression (`@regression`) | **25 passed** (bramka Phase 2; plan docelowy: 55 TC) |
+| Characterization | 4 passed |
+| NF (chromium) | 8 passed |
+| Cross-browser NF5 | 9 passed (3 TC × 3 browsers) |
+| **Łącznie unikalnych TC** | **42** (+ 9 uruchomień cross-browser) |
+| Warstwy kodu | `core/`, `components/`, `flows/`, `data/`, `pages/`, `fixtures/`, `tests/{smoke,regression,characterization,nf}/` |
+| Wykonywanie | Two-lane `@readonly` / `@mutating` |
+| CI | lint + smoke (PR); nightly: regression, characterization, nf, cross-browser |
+
+### Stan historyczny (przed Phase 1 — referencja)
+
+| Metryka | Wartość |
+|---------|---------|
+| Testy smoke | 3 passed, 2 skipped |
+| Brakujące elementy | `HeaderComponent`, Flow Objects, reset stanu aplikacji |
 
 ---
 
@@ -52,20 +55,24 @@ SauceDemo (Swag Labs) to statyczna SPA bez publicznego REST API. Stan koszyka i 
 
 ### 2.3 Mapowanie na plan testów
 
-| Element planu (§13) | Implementacja architektoniczna |
-|---------------------|-------------------------------|
-| POM: `LoginPage`, `InventoryPage`, `CartPage`, `CheckoutPage` | `pages/` — bez zmian nazw w Phase 1 |
-| POM: `SidebarComponent`, `HeaderComponent` | `components/` |
-| Suite Smoke (15 TC) | `tests/smoke/` — Phase 1 realizuje 5 pierwszych TC automatyzacji |
-| Suite Regression (55 TC) | `tests/regression/` — Phase 2 |
-| Charakteryzacja person | `tests/characterization/` — Phase 3 |
-| NF6 Utrzymywalność | Ten dokument + separacja warstw |
+| Element planu (§13) | Implementacja architektoniczna | Stan |
+|---------------------|-------------------------------|------|
+| POM: `LoginPage`, `InventoryPage`, `CartPage` | `pages/` | done |
+| POM: checkout (split) | `CheckoutStepOnePage`, `CheckoutOverviewPage`, `CheckoutCompletePage` | done (Phase 2) |
+| POM: `SidebarComponent`, `HeaderComponent` | `components/` | done |
+| Suite Smoke (**15 TC** plan) | `tests/smoke/` | **5 TC** zautomatyzowanych (Phase 1 gate) |
+| Suite Regression (**55 TC** plan) | `tests/regression/` | **25 TC** zautomatyzowanych (Phase 2 gate); ~30 TC w backlogu |
+| Charakteryzacja person | `tests/characterization/` | 4 TC (QUIRK-001–004) |
+| NF + cross-browser | `tests/nf/` | 5 + 9 uruchomień NF5 |
+| NF6 Utrzymywalność | Ten dokument + separacja warstw + `core/selectors.ts` | done |
+
+> **Uwaga:** Kolumna „plan” odnosi się do `saucedemo-test-plan.md` (85 TC). Kolumna „stan” odzwierciedla **aktualny kod** i bramki faz §11.
 
 ---
 
 ## 3. Architektura warstwowa
 
-### 3.1 Diagram warstw (docelowy)
+### 3.1 Diagram warstw (stan implementacji)
 
 ```mermaid
 flowchart TB
@@ -74,6 +81,7 @@ flowchart TB
         TS[smoke/]
         TR[regression/]
         TC[characterization/]
+        TN[nf/]
     end
 
     subgraph L2["Warstwa 2 — Fixtures (fixtures/)"]
@@ -88,11 +96,17 @@ flowchart TB
 
     subgraph L4["Warstwa 4 — Pages & Components"]
         direction TB
+        subgraph core["core/"]
+            BP[BasePage]
+            SEL[selectors.ts]
+        end
         subgraph pages["pages/"]
             LP[LoginPage]
             IP[InventoryPage]
             CP[CartPage]
-            CH[CheckoutPage]
+            CS1[CheckoutStepOnePage]
+            CS2[CheckoutOverviewPage]
+            CC[CheckoutCompletePage]
         end
         subgraph components["components/"]
             HC[HeaderComponent]
@@ -116,6 +130,7 @@ flowchart TB
     L2 --> L4
     L3 --> L4
     L3 --> L5
+    L4 --> core
     L4 --> L6
     L5 --> ENV
     L6 --> PW
@@ -128,7 +143,7 @@ flowchart TB
 | `tests/` | `fixtures/`, `data/` | `pages/` bezpośrednio (preferuj flows) |
 | `fixtures/` | `flows/`, `pages/`, `components/`, `config/` | `tests/` |
 | `flows/` | `pages/`, `components/`, `data/` | `fixtures/`, `tests/` |
-| `pages/`, `components/` | `@playwright/test` (`Page`, `Locator`) | `flows/`, `tests/` |
+| `pages/`, `components/` | `@playwright/test`, `core/selectors.ts` | `flows/`, `tests/` |
 | `data/` | `config/` | `pages/`, `flows/` |
 
 **Zasada:** testy nie znają lokatorów. Testy wywołują flows lub fixtures; flows orkiestrują pages i components.
@@ -144,21 +159,22 @@ sequenceDiagram
     participant SF as ShoppingFlow
     participant IP as InventoryPage
     participant CP as CartPage
-    participant CH as CheckoutPage
+    participant CS1 as CheckoutStepOnePage
+    participant CS2 as CheckoutOverviewPage
+    participant CC as CheckoutCompletePage
     participant HC as HeaderComponent
 
     T->>F: beforeEach(resetAppState + loginAsStandardUser)
     F->>SB: resetAppState()
     F->>IP: login via LoginPage
-    T->>CF: completeCheckout(backpack, defaultCustomer)
+    T->>CF: completeCheckout(backpack, DEFAULT_CUSTOMER)
     CF->>SF: addProductToCart(backpack)
     SF->>IP: click add / handle already-in-cart
-    SF->>HC: assert cartBadge
-    CF->>IP: openCart()
+    CF->>HC: openCart()
     CF->>CP: proceedToCheckout()
-    CF->>CH: fillCustomerInfo + continue + finish
-    CF->>CH: assert completeHeader
-    T->>T: expect Thank you for your order!
+    CF->>CS1: fillCustomerInfo + continue
+    CF->>CS2: finishOrder()
+    T->>CC: expect completeHeader Thank you
 ```
 
 ---
@@ -227,40 +243,46 @@ saucelab/
 └── …
 ```
 
-### 4.3 Stan docelowy — Phase 2+ (pełna architektura)
+### 4.3 Stan implementacji — Phase 2+ (aktualny kod)
 
 ```
 saucelab/
-├── core/                            # Phase 2
+├── core/
 │   ├── BasePage.ts
-│   └── selectors.ts                 # opcjonalny rejestr lokatorów
+│   └── selectors.ts                 # rejestr centralny lokatorów
 ├── components/
 │   ├── HeaderComponent.ts
 │   └── SidebarComponent.ts
 ├── config/
-│   └── credentials.ts
+│   └── credentials.ts               # SAUCE_PASSWORD via env
 ├── data/
-│   ├── products.ts
-│   ├── checkout-data.ts
-│   ├── checkout.builder.ts          # Phase 2
-│   └── users.ts                     # Phase 2 — UserFactory (6 person)
+│   ├── products.ts                  # 6 produktów + SORT_OPTIONS
+│   ├── checkout-data.ts             # barrel: CheckoutCustomer, DEFAULT_CUSTOMER
+│   ├── checkout.builder.ts          # Builder pattern
+│   ├── cart-states.ts               # Object Mother — stany koszyka
+│   ├── users.ts                     # Factory 6 person
+│   └── persona-strategy.ts          # Strategy — progi i asercje person
 ├── fixtures/
-│   └── sauce.fixture.ts             # loginAs(persona), resetAppState
+│   └── sauce.fixture.ts
 ├── flows/
-│   ├── AuthFlow.ts                  # Phase 2
+│   ├── AuthFlow.ts
 │   ├── ShoppingFlow.ts
 │   └── CheckoutFlow.ts
 ├── pages/
 │   ├── LoginPage.ts
 │   ├── InventoryPage.ts
 │   ├── CartPage.ts
-│   ├── CheckoutStepOnePage.ts       # Phase 2 — split CheckoutPage
+│   ├── CheckoutStepOnePage.ts
 │   ├── CheckoutOverviewPage.ts
 │   └── CheckoutCompletePage.ts
 ├── tests/
 │   ├── smoke/
-│   ├── regression/                  # Phase 2
-│   └── characterization/            # Phase 3
+│   ├── regression/
+│   ├── characterization/
+│   └── nf/                          # performance, security, a11y, cross-browser
+├── .github/workflows/
+├── eslint.config.mjs
+├── playwright.config.ts             # chromium, firefox, webkit
 └── …
 ```
 
@@ -278,9 +300,10 @@ saucelab/
 | **Fixture Pattern** | `fixtures/` | Rozszerzenie | DI obiektów testowych; setup/teardown w Playwright |
 | **Factory** | `data/users.ts` | Phase 2 | Tworzenie person demo bez modyfikacji fixture |
 | **Builder** | `data/checkout.builder.ts` | Phase 2 | Syntetyczne dane checkout (plan §14) |
-| **Strategy** | `data/users.ts` + characterization | Phase 3 | Oczekiwania zależne od persony (glitch, problem, visual) |
+| **Strategy** | `data/persona-strategy.ts` + characterization | Phase 3 | Oczekiwania zależne od persony (glitch, problem, visual) |
 | **Data-Driven** | `tests/regression/` | Phase 2 | Parametryzacja macierzy negatywnej logowania, sortowania |
-| **Object Mother** | `data/` | Phase 3 | Predefiniowane stany koszyka (empty, single-item) |
+| **Object Mother** | `data/cart-states.ts` | Refactor | Predefiniowane stany koszyka (`empty`, `singleBackpack`, …) |
+| **Selector registry** | `core/selectors.ts` | Refactor | Jedno źródło prawdy lokatorów dla pages/components |
 
 ### 5.2 Diagram wzorców a artefakty
 
@@ -302,7 +325,10 @@ flowchart LR
         flows[flows/*.ts]
         fix[fixtures/sauce.fixture.ts]
         users[data/users.ts]
-        checkout[data/checkout-data.ts]
+        builder[data/checkout.builder.ts]
+        cartMother[data/cart-states.ts]
+        strategy[data/persona-strategy.ts]
+        selectors[core/selectors.ts]
         specs[tests/**/*.spec.ts]
     end
 
@@ -311,8 +337,11 @@ flowchart LR
     FACADE --> flows
     FIX --> fix
     FACT --> users
-    BUILD --> checkout
-    STRAT --> users
+    BUILD --> builder
+    STRAT --> strategy
+
+    pages --> selectors
+    comp --> selectors
 
     specs --> fix
     specs --> flows
@@ -347,15 +376,15 @@ flowchart LR
 | **I** — Interface Segregation | Test importuje flow, nie wszystkie pages | — | Wąski publiczny API flow | Fixture typowany per potrzeba | — |
 | **D** — Dependency Inversion | Zależność od `Page` (abstrakcja Playwright) | j.w. | Flow zależy od pages, nie od testów | Test zależy od fixture, nie od `Page` | — |
 
-### 6.2 Naruszenia w stanie bieżącym i remediacja
+### 6.2 Naruszenia historyczne i remediacja
 
-| Naruszenie | Lokalizacja | Remediacja (faza) |
-|------------|-------------|-------------------|
-| SRP: `CheckoutPage` obejmuje 3 kroki checkout | `pages/CheckoutPage.ts` | Phase 2: split na 3 klasy |
-| SRP: `InventoryPage` posiada cart link/badge | `pages/InventoryPage.ts` | Phase 1: `HeaderComponent` |
-| OCP: tylko `loginAsStandardUser` | `fixtures/sauce.fixture.ts` | Phase 2: `loginAs(persona)` + `UserFactory` |
-| DRY: brak resetu stanu | shopping/checkout specs | Phase 1: `resetAppState` w fixture |
-| ISP: testy mogą importować wszystkie pages | specs | Phase 1: preferuj `shoppingFlow`, `checkoutFlow` |
+| Naruszenie | Lokalizacja | Remediacja | Stan |
+|------------|-------------|------------|------|
+| SRP: `CheckoutPage` obejmuje 3 kroki checkout | `pages/CheckoutPage.ts` | Split na 3 klasy | **done** |
+| SRP: `InventoryPage` posiada cart link/badge | `pages/InventoryPage.ts` | `HeaderComponent` | **done** |
+| OCP: tylko `loginAsStandardUser` | `fixtures/sauce.fixture.ts` | `loginAs(persona)` + `UserFactory` | **done** |
+| DRY: brak resetu stanu | shopping/checkout specs | `resetAppState` w fixture | **done** |
+| ISP: testy importują pages bezpośrednio | specs | Preferuj flows; brak importów `pages/` w `tests/` | **done** |
 
 ---
 
@@ -376,63 +405,70 @@ flowchart LR
 
 | Metoda | Zachowanie |
 |--------|------------|
-| `open()` | Klik `#react-burger-menu-btn` |
-| `resetAppState()` | `open()` → klik `#reset_sidebar_link` |
-| `logout()` | `open()` → klik `#logout_sidebar_link` |
+| `open()` | Idempotentne otwarcie menu (`aria-hidden` na `.bm-menu-wrap`) |
+| `resetAppState()` | `open()` → `evaluate(click)` na `#reset_sidebar_link` (link poza viewport) |
+| `logout()` | `open()` → `evaluate(click)` na `#logout_sidebar_link` |
 
-**Migracja:** `pages/SidebarComponent.ts` → `components/SidebarComponent.ts`. Aktualizacja importów w `fixtures/sauce.fixture.ts`.
+**Migracja:** `pages/SidebarComponent.ts` → `components/SidebarComponent.ts` — **done**.
 
 ### 7.3 `ShoppingFlow`
 
 | Metoda | Kontrakt |
 |--------|----------|
-| `addProductToCart(productId: string)` | Jeśli `[data-test="add-to-cart-{id}"]` widoczny — klik. Jeśli `[data-test="remove-{id}"]` — produkt już w koszyku (po resecie nie powinno wystąpić). |
+| `addProductToCart(productId)` | Idempotentne dodanie; obsługa już dodanego produktu |
+| `addProductsToCart(productIds)` | Iteracja po `addProductToCart` |
+| `prepareCartState(cartState)` | Object Mother — ustawia koszyk wg `CART_STATES` |
+| `removeProductFromInventory(productId)` | Klik Remove na karcie produktu |
 | `getCartItemCount()` | Delegacja do `HeaderComponent` |
 
-**Zależności:** `InventoryPage`, `HeaderComponent`.
+**Zależności:** `InventoryPage`, `HeaderComponent`, `data/cart-states.ts`.
 
 ### 7.4 `CheckoutFlow`
 
 | Metoda | Kontrakt |
 |--------|----------|
-| `completeCheckout(productId, customer)` | `ShoppingFlow.addProductToCart` → open cart → checkout → fill → continue → finish |
-| `cancelCheckout(productId)` | Phase 2 — `TC-L3-FUNC-020` |
+| `completeCheckout(productId, customer)` | Dodaj → koszyk → checkout → fill → finish |
+| `proceedToOverview(productId, customer)` | Dodaj → koszyk → checkout → fill → overview |
+| `proceedToOverviewForCartState(cartState, customer)` | Object Mother + overview |
+| `startCheckout(productId)` / `startCheckoutForCartState(cartState)` | Do kroku 1 checkout |
+| `cancelFromStepOne()` | Anuluj checkout (`TC-L3-FUNC-020`) |
 
-**Zależności:** `ShoppingFlow`, `InventoryPage`, `CartPage`, `CheckoutPage`.
+**Zależności:** `ShoppingFlow`, `HeaderComponent`, `CartPage`, `CheckoutStepOnePage`, `CheckoutOverviewPage`, `CheckoutCompletePage`.
 
 ### 7.5 `data/products.ts`
 
-```typescript
-export const SAUCE_LABS_BACKPACK = 'sauce-labs-backpack';
-// Phase 2: pozostałe 5 produktów
-```
+Katalog 6 produktów (`PRODUCTS`) + `SORT_OPTIONS` + `SAUCE_LABS_BACKPACK` — **done** (Phase 2).
 
-### 7.6 `data/checkout-data.ts`
+### 7.6 `data/checkout.builder.ts` / `checkout-data.ts`
 
-| Stała | Wartość | Źródło |
-|-------|---------|--------|
-| `DEFAULT_CUSTOMER.firstName` | `Test` | Plan testów §14 |
-| `DEFAULT_CUSTOMER.lastName` | `User` | Plan testów §14 |
-| `DEFAULT_CUSTOMER.postalCode` | `12345` | Plan testów §14 |
+| Artefakt | Opis |
+|----------|------|
+| `checkoutCustomer()` | Builder — fluent API dla danych klienta |
+| `DEFAULT_CUSTOMER` | `{ firstName: Test, lastName: User, postalCode: 12345 }` |
+| `checkout-data.ts` | Barrel re-eksportujący typ i builder |
 
 ---
 
-## 8. Specyfikacja fixtures (Phase 1)
+## 8. Specyfikacja fixtures
 
-### 8.1 Rozszerzenie `SauceFixtures`
+### 8.1 `SauceFixtures` (stan implementacji)
 
 | Fixture | Typ | Zakres |
 |---------|-----|--------|
-| `loginPage` | `LoginPage` | istniejący |
-| `inventoryPage` | `InventoryPage` | istniejący |
-| `cartPage` | `CartPage` | istniejący |
-| `checkoutPage` | `CheckoutPage` | istniejący |
-| `sidebar` | `SidebarComponent` | istniejący (nowy import path) |
-| `header` | `HeaderComponent` | **nowy** |
-| `shoppingFlow` | `ShoppingFlow` | **nowy** |
-| `checkoutFlow` | `CheckoutFlow` | **nowy** |
-| `loginAsStandardUser` | `() => Promise<void>` | istniejący |
-| `resetAppState` | `() => Promise<void>` | **nowy** |
+| `loginPage` | `LoginPage` | strona logowania |
+| `inventoryPage` | `InventoryPage` | katalog produktów |
+| `cartPage` | `CartPage` | koszyk |
+| `checkoutStepOne` | `CheckoutStepOnePage` | checkout krok 1 |
+| `checkoutOverview` | `CheckoutOverviewPage` | checkout krok 2 |
+| `checkoutComplete` | `CheckoutCompletePage` | potwierdzenie zamówienia |
+| `sidebar` | `SidebarComponent` | menu boczne |
+| `header` | `HeaderComponent` | nagłówek + koszyk |
+| `authFlow` | `AuthFlow` | logowanie z walidacją URL |
+| `shoppingFlow` | `ShoppingFlow` | dodawanie/usuwanie produktów |
+| `checkoutFlow` | `CheckoutFlow` | pełny journey checkout |
+| `loginAs(persona)` | `(UserPersona) => Promise<void>` | Factory 6 person |
+| `loginAsStandardUser` | `() => Promise<void>` | skrót dla `standard` |
+| `resetAppState` | `() => Promise<void>` | reset koszyka/sesji demo |
 
 ### 8.2 Diagram lifecycle fixture (test mutujący)
 
@@ -472,17 +508,15 @@ stateDiagram-v2
 | `TC-L3-FUNC-001` | `login.smoke.spec.ts` | `loginPage`, `inventoryPage` | passed (bez zmian) |
 | `TC-L3-NEG-001` | `login.smoke.spec.ts` | `loginPage` | passed (bez zmian) |
 | `TC-L3-FUNC-010` | `shopping.smoke.spec.ts` | `shoppingFlow`, `header` | **passed** (un-skip) |
-| `TC-L3-SMOKE-002` | `checkout.smoke.spec.ts` | `checkoutFlow`, `checkoutPage` | **passed** (un-skip) |
+| `TC-L3-SMOKE-002` | `checkout.smoke.spec.ts` | `checkoutFlow`, `checkoutComplete` | passed |
 
-### 9.1 Przykładowy kontrakt spec (po Phase 1)
+### 9.1 Przykładowy kontrakt spec
 
-Test `TC-L3-SMOKE-002` powinien mieć postać:
+Test `TC-L3-SMOKE-002`:
 
 - `beforeEach`: `resetAppState` → `loginAsStandardUser`
 - body: `checkoutFlow.completeCheckout(SAUCE_LABS_BACKPACK, DEFAULT_CUSTOMER)`
-- assert: `checkoutPage.completeHeader` = `"Thank you for your order!"`
-
-Bez jawnych lokatorów i bez powielania kroków nawigacji w spec.
+- assert: `checkoutComplete.completeHeader` = `"Thank you for your order!"`
 
 ---
 
@@ -502,10 +536,8 @@ Bez jawnych lokatorów i bez powielania kroków nawigacji w spec.
 | Reguła | Enforcement |
 |--------|-------------|
 | Selektor użyty na 2+ stronach → `components/` | `HeaderComponent` |
-| Selektor użyty w 1 page → `pages/` | `InventoryPage.sortDropdown` |
-| Selektor użyty w 0 testów → usuń | Przegląd przy każdej fazie |
-
-Phase 2 opcjonalnie wprowadza `core/selectors.ts` jako rejestr centralny.
+| Selektor użyty w 1 page → `pages/` lub `core/selectors.ts` | `InventoryPage.sortDropdown` |
+| Rejestr centralny | `core/selectors.ts` — **wdrożony**; pages/components importują `SELECTORS` |
 
 ---
 
@@ -561,13 +593,13 @@ Phase 2 opcjonalnie wprowadza `core/selectors.ts` jako rejestr centralny.
 | ESLint + CI | GitHub Actions wg szkicu planu §13 |
 | `@nf-a11y`, `@nf-performance` | Projekty Playwright per tag |
 
-**Bramka Phase 3:** characterization 4/4 + NF 5/5 + lint green. **Zrealizowano 2026-07-14.**
+**Bramka Phase 3:** characterization 4/4 + NF 8/8 + lint green. **Zrealizowano 2026-07-14** (NF rozszerzone o visual S2).
 
 | Krok | Zadanie | Pliki | Stan |
 |------|---------|-------|------|
 | 3.1 | Persona strategy | `data/persona-strategy.ts` | done |
 | 3.2 | Characterization suite | `tests/characterization/persona.characterization.spec.ts` | 4 TC |
-| 3.3 | NF performance/security/a11y | `tests/nf/*.nf.spec.ts` | 5 TC |
+| 3.3 | NF performance/security/a11y/visual | `tests/nf/*.nf.spec.ts` | 8 TC |
 | 3.4 | ESLint | `eslint.config.mjs`, `npm run lint` | done |
 | 3.5 | GitHub Actions | `.github/workflows/saucedemo-tests.yml` | done |
 
@@ -580,7 +612,7 @@ Phase 2 opcjonalnie wprowadza `core/selectors.ts` jako rejestr centralny.
 | Izolacja chromium | Smoke/regression/characterization/NF bazowe → `--project=chromium` |
 | Skrypt | `npm run test:cross-browser` — 3 TC × 3 przeglądarki |
 
-**Bramka Phase 4:** `npm run test:cross-browser` → 9 passed (3 TC × 3 browsers).
+**Bramka Phase 4:** `npm run test:cross-browser` → 9 passed (3 TC × 3 browsers). **Zrealizowano 2026-07-14.**
 
 | Krok | Zadanie | Pliki | Stan |
 |------|---------|-------|------|
@@ -589,7 +621,38 @@ Phase 2 opcjonalnie wprowadza `core/selectors.ts` jako rejestr centralny.
 | 4.3 | Skrypt npm | `test:cross-browser` | done |
 | 4.4 | CI nightly | `.github/workflows/saucedemo-tests.yml` | done |
 
-### 11.5 Diagram roadmapy
+### 11.5 Refactor — wzorce i rejestr lokatorów
+
+| Zadanie | Opis |
+|---------|------|
+| `core/selectors.ts` | Centralny rejestr lokatorów; pages/components bez hardcoded stringów |
+| `data/checkout.builder.ts` | Builder dla danych checkout; używany w NEG-006/007 |
+| `data/cart-states.ts` | Object Mother — `CART_STATES` + `prepareCartState` w `ShoppingFlow` |
+
+**Bramka refactor:** lint green; smoke 5/5; regression 25/25. **Zrealizowano 2026-07-14.**
+
+### 11.6 Następne kroki (poza bieżącym dokumentem)
+
+| Priorytet | Zadanie | Cel | Stan |
+|-----------|---------|-----|------|
+| P1 | Rozszerzenie regression | 25 → ~55 TC (`FUNC-015/016`, `NEG-009`, …) | backlog |
+| P2 | Visual regression | `TC-L3-S2-001/002` | **done** 2026-07-14 |
+| P3 | Characterization | `TC-L3-PERS-005` | backlog |
+| P4 | Pozostałe NF | `NF1-002`, `NF2-*`, `SEC-003`, `S6-001` | backlog |
+
+### 11.7 Visual regression (S2) — zrealizowano
+
+| Krok | Plik | Stan |
+|------|------|------|
+| Suite S2 | `tests/nf/visual.nf.spec.ts` | `TC-L3-S2-001`, `002`, `003` (login) |
+| Baseline PNG | `tests/nf/visual.nf.spec.ts-snapshots/` | commit w repo |
+| Skrypt | `npm run test:nf-visual` | done |
+| CI | w ramach `npm run test:nf` (nightly) | `@nf-visual @mutating` |
+| PERS-004 | annotation `sort-visible` bez duplikatu attach | done |
+
+**Bramka:** `npm run test:nf-visual` → 3 passed (chromium).
+
+### 11.8 Diagram roadmapy
 
 ```mermaid
 gantt
@@ -604,6 +667,10 @@ gantt
     Regression suite              :p2b, after p2a, 5d
     section Phase 3
     Characterization + NF gates   :p3a, after p2b, 7d
+    section Phase 4
+    Cross-browser NF5             :p4a, after p3a, 2d
+    section Refactor
+    selectors + builder + cart    :ref, after p4a, 1d
 ```
 
 ---
@@ -620,15 +687,15 @@ gantt
 | Czas smoke suite | ≤ 30 s lokalnie | Playwright report |
 | Flakiness (3 kolejne runy) | 0 losowych fail | manual CI check |
 
-### 12.2 Checklist review architektonicznego
+### 12.2 Checklist review architektonicznego (audyt 2026-07-14)
 
-- [ ] Test nie zawiera selektorów CSS/XPath
-- [ ] Flow nie zawiera asercji (asercje w spec)
-- [ ] Page nie zawiera logiki wieloetapowej nawigacji
-- [ ] Component nie zawiera logiki specyficznej dla jednej strony
-- [ ] Fixture dostarcza reset przed mutacją na shared demo
-- [ ] ID testu (`TC-L3-*`) zgodne z planem §8
-- [ ] Nowa persona → nowy plik characterization, nie modyfikacja smoke
+- [x] Test nie zawiera selektorów CSS/XPath (poza characterization `img` — dopuszczalne)
+- [x] Flow nie zawiera asercji (asercje w spec)
+- [x] Page nie zawiera logiki wieloetapowej nawigacji
+- [x] Component nie zawiera logiki specyficznej dla jednej strony
+- [x] Fixture dostarcza reset przed mutacją na shared demo
+- [x] ID testu (`TC-L3-*`) zgodne z planem §8 (w zakresie zaimplementowanych TC)
+- [x] Nowa persona → plik characterization, nie modyfikacja smoke
 
 ---
 
@@ -690,13 +757,15 @@ flowchart LR
 |--------|------|-------|--------|
 | 1.0 | 2026-07-14 | Senior QA Architect | Wersja inicjalna — audyt scaffold, Phase 1–3, SOLID, wzorce |
 | 1.1 | 2026-07-14 | Senior QA Architect | Two-lane parallel, `SAUCE_PASSWORD` via env/secrets |
+| 1.2 | 2026-07-14 | Senior QA Architect | Sync z kodem: Phase 4, refactor, §2.3 plan vs stan, checklist §12.2 |
 
 ---
 
-## 17. Sign-off implementacji Phase 1
+## 17. Sign-off implementacji
 
 | Rola | Akcja | Data |
 |------|-------|------|
-| QA Architect | Dokument zatwierdzony | 2026-07-14 |
-| Developer / Automation Engineer | Implementacja Phase 2 | 2026-07-14 |
-| Weryfikacja Phase 4 | cross-browser 9/9 passed | 2026-07-14 |
+| QA Architect | Dokument zatwierdzony (v1.0) | 2026-07-14 |
+| Developer / Automation Engineer | Phase 1–4 + refactor | 2026-07-14 |
+| QA Architect | Audyt zgodności doc ↔ kod (v1.2) | 2026-07-14 |
+| Weryfikacja CI | lint + smoke green on PR | 2026-07-14 |

@@ -11,6 +11,7 @@
     "test:regression": "playwright test --grep \"(?=.*@regression)(?=.*@readonly)\" --workers=4 --project=chromium && playwright test --grep \"(?=.*@regression)(?=.*@mutating)\" --workers=1 --project=chromium",
     "test:characterization": "playwright test --grep @characterization --workers=1 --project=chromium",
     "test:nf": "playwright test --grep \"(?=.*@nf)(?=.*@readonly)\" --workers=4 --project=chromium && playwright test --grep \"(?=.*@nf)(?=.*@mutating)\" --workers=1 --project=chromium",
+    "test:nf-visual": "playwright test --grep @nf-visual --workers=1 --project=chromium",
     "test:cross-browser": "playwright test --grep @nf-cross-browser --workers=1",
     "test:ui": "playwright test --ui",
     "lint": "eslint .",

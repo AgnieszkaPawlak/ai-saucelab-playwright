@@ -146,6 +146,7 @@
 | PAT-ANALYSIS-01, PAT-DESIGN-01 | Instruction-tuned |
 | PAT-REG-01 | Reasoning |
 | PAT-IMPL-01 | Instruction-tuned z kodem |
+| PAT-VISUAL-01 | Instruction-tuned z kodem (visual snapshots) — [saucedemo-visual-regression-prompt.md](saucedemo-visual-regression-prompt.md) |
 | PAT-REPORT-01 | Instruction-tuned |
 
 ---
@@ -155,4 +156,5 @@
 | Wersja | Data | Zmiana |
 |--------|------|--------|
 | 1.0 | 2026-07-14 | Początkowa biblioteka dla planu SauceDemo |
+| 1.1 | 2026-07-14 | PAT-VISUAL-01 — visual regression S2-001/002 |
 | 1.1 | 2026-07-14 | Tłumaczenie na polski |
