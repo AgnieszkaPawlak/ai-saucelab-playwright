@@ -1,11 +1,15 @@
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(
-      `Missing required environment variable ${name}. Copy .env.example to .env and set credentials.`,
-    );
+function requireEnv(name: string, aliases: readonly string[] = []): string {
+  const candidates = [name, ...aliases];
+  for (const candidate of candidates) {
+    const value = process.env[candidate];
+    if (value) {
+      return value;
+    }
   }
-  return value;
+
+  throw new Error(
+    `Missing required environment variable ${name}. Copy .env.example to .env locally, or configure secrets.SAUCE_PASSWORD in GitHub Actions.`,
+  );
 }
 
 function envOrDefault(name: string, defaultValue: string): string {
@@ -13,7 +17,7 @@ function envOrDefault(name: string, defaultValue: string): string {
 }
 
 export const credentials = {
-  password: requireEnv('SAUCE_PASSWORD'),
+  password: requireEnv('SAUCE_PASSWORD', ['STANDARD_PASSWORD']),
   standardUser: envOrDefault('STANDARD_USER', 'standard_user'),
   lockedOutUser: envOrDefault('LOCKED_OUT_USER', 'locked_out_user'),
   problemUser: envOrDefault('PROBLEM_USER', 'problem_user'),

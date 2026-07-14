@@ -36,7 +36,7 @@ npm run lint
 | Środowisko | Hasło | Usernames |
 |------------|-------|-----------|
 | Lokalnie | `.env` → `SAUCE_PASSWORD` | `.env` (domyślnie publiczne demo) |
-| CI | GitHub Secret `SAUCE_PASSWORD` | domyślne wartości demo |
+| CI | GitHub Secret **`SAUCE_PASSWORD`** (Actions → Secrets, not Variables) | alias `STANDARD_PASSWORD`; fallback + warning if empty |
 
 ### Wykonywanie (two-lane)
 
