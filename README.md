@@ -31,12 +31,15 @@ npm run test:smoke
 ```
 saucelab/
 ├── docs/                   # dokumentacja testowa
+├── components/             # Component Pattern (header, sidebar)
 ├── config/credentials.ts
+├── data/                   # produkty, dane checkout
 ├── fixtures/sauce.fixture.ts
+├── flows/                  # Flow / Facade (shopping, checkout)
 ├── pages/                  # Page Object Model
 ├── tests/smoke/            # suite Smoke (@smoke)
 ├── playwright.config.ts
 └── .env.example
 ```
 
-**Stan:** scaffold — 3 działające testy login smoke; shopping/checkout jako placeholdery (`test.skip`).
+**Stan:** Phase 1 — 5 testów smoke (login, shopping, checkout); warstwy components, flows, data.

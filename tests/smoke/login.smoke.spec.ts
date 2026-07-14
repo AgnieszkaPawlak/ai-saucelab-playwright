@@ -13,13 +13,14 @@ test.describe('Smoke — Login @smoke', () => {
 
   test('TC-L3-FUNC-001: standard_user logs in successfully', async ({
     loginPage,
+    header,
     inventoryPage,
   }) => {
     await loginPage.goto();
     await loginPage.login(credentials.standardUser, credentials.standardPassword);
 
     await expect(loginPage.page).toHaveURL(/inventory\.html/);
-    await expect(inventoryPage.title).toHaveText('Products');
+    await expect(header.title).toHaveText('Products');
     await expect(inventoryPage.inventoryItems).toHaveCount(6);
   });
 

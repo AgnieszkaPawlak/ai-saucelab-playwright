@@ -19,7 +19,7 @@ Implementacja odbywa się **małymi krokami** (Phase 1 → Phase 2 → Phase 3).
 
 | Metryka | Wartość |
 |---------|---------|
-| Testy smoke (`@smoke`) | 5 zdefiniowanych; 3 passed, 2 skipped |
+| Testy smoke (`@smoke`) | 5 passed, 0 skipped |
 | Warstwy kodu | `pages/`, `fixtures/`, `config/`, `tests/smoke/` |
 | Weryfikacja żywej aplikacji | Lokatory poprawne; ryzyko flakiness ze względu na współdzielony stan koszyka |
 | Brakujące elementy POM (wg planu) | `HeaderComponent`, Flow Objects, reset stanu aplikacji |
@@ -653,5 +653,5 @@ flowchart LR
 | Rola | Akcja | Data |
 |------|-------|------|
 | QA Architect | Dokument zatwierdzony | 2026-07-14 |
-| Developer / Automation Engineer | Implementacja Phase 1 | _oczekuje_ |
-| Weryfikacja | `npm run test:smoke` — 5/5 passed | _oczekuje_ |
+| Developer / Automation Engineer | Implementacja Phase 1 | 2026-07-14 |
+| Weryfikacja | `npm run test:smoke` — 5/5 passed | 2026-07-14 |

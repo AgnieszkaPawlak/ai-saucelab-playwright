@@ -1,14 +1,20 @@
-import { test } from '../../fixtures/sauce.fixture';
+import { test, expect } from '../../fixtures/sauce.fixture';
+import { DEFAULT_CUSTOMER } from '../../data/checkout-data';
+import { SAUCE_LABS_BACKPACK } from '../../data/products';
 
 test.describe('Smoke — Checkout @smoke', () => {
-  test.beforeEach(async ({ loginAsStandardUser }) => {
+  test.beforeEach(async ({ loginAsStandardUser, resetAppState }) => {
     await loginAsStandardUser();
+    await resetAppState();
   });
 
-  // TODO: TC-L3-SMOKE-002 — full checkout flow (Backpack)
   // TODO: TC-L3-FUNC-020 — cancel checkout returns to inventory
 
-  test.skip('TC-L3-SMOKE-002: complete checkout for backpack (placeholder)', async () => {
-    // Implement in next iteration
+  test('TC-L3-SMOKE-002: complete checkout for backpack', async ({
+    checkoutFlow,
+    checkoutPage,
+  }) => {
+    await checkoutFlow.completeCheckout(SAUCE_LABS_BACKPACK, DEFAULT_CUSTOMER);
+    await expect(checkoutPage.completeHeader).toHaveText('Thank you for your order!');
   });
 });

@@ -1,18 +1,15 @@
 import { type Locator, type Page } from '@playwright/test';
+import { HeaderComponent } from '../components/HeaderComponent';
 
 export class InventoryPage {
   readonly page: Page;
-  readonly title: Locator;
-  readonly cartLink: Locator;
-  readonly cartBadge: Locator;
   readonly sortDropdown: Locator;
   readonly inventoryItems: Locator;
+  private readonly header: HeaderComponent;
 
-  constructor(page: Page) {
+  constructor(page: Page, header: HeaderComponent) {
     this.page = page;
-    this.title = page.locator('[data-test="title"]');
-    this.cartLink = page.locator('.shopping_cart_link');
-    this.cartBadge = page.locator('.shopping_cart_badge');
+    this.header = header;
     this.sortDropdown = page.locator('[data-test="product-sort-container"]');
     this.inventoryItems = page.locator('.inventory_item');
   }
@@ -30,7 +27,7 @@ export class InventoryPage {
   }
 
   async openCart(): Promise<void> {
-    await this.cartLink.click();
+    await this.header.openCart();
   }
 
   async sortBy(optionLabel: string): Promise<void> {
