@@ -5,12 +5,16 @@ dotenv.config();
 
 const baseURL = process.env.BASE_URL ?? 'https://www.saucedemo.com';
 
+const workers = process.env.PLAYWRIGHT_WORKERS
+  ? Number(process.env.PLAYWRIGHT_WORKERS)
+  : undefined;
+
 export default defineConfig({
   testDir: './tests',
-  fullyParallel: false,
+  fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  workers: 1,
+  workers,
   reporter: [['html', { open: 'never' }], ['list']],
   use: {
     baseURL,

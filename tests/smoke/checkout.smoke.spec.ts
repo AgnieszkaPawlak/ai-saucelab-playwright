@@ -2,7 +2,7 @@ import { test, expect } from '../../fixtures/sauce.fixture';
 import { DEFAULT_CUSTOMER } from '../../data/checkout-data';
 import { SAUCE_LABS_BACKPACK } from '../../data/products';
 
-test.describe('Smoke — Checkout @smoke', () => {
+test.describe('Smoke — Checkout @smoke @mutating', () => {
   test.beforeEach(async ({ loginAsStandardUser, resetAppState }) => {
     await loginAsStandardUser();
     await resetAppState();

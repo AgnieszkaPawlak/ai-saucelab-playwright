@@ -22,7 +22,7 @@ Pełna dokumentacja testowa znajduje się w katalogu **[docs/](docs/README.md)**
 cd saucelab
 npm install
 npx playwright install chromium
-cp .env.example .env   # opcjonalnie
+cp .env.example .env   # wymagane — SAUCE_PASSWORD
 npm run test:smoke
 npm run test:regression
 npm run test:characterization
@@ -30,6 +30,22 @@ npm run test:nf
 npm run test:cross-browser
 npm run lint
 ```
+
+### Credentials
+
+| Środowisko | Hasło | Usernames |
+|------------|-------|-----------|
+| Lokalnie | `.env` → `SAUCE_PASSWORD` | `.env` (domyślnie publiczne demo) |
+| CI | GitHub Secret `SAUCE_PASSWORD` | domyślne wartości demo |
+
+### Wykonywanie (two-lane)
+
+| Skrypt | Lane | Workers |
+|--------|------|---------|
+| `test:readonly` | `@readonly` — login negatywny, NF bez koszyka | 4 |
+| `test:mutating` | `@mutating` — cart, checkout, characterization | 1 |
+| `test` | readonly → mutating | jak wyżej |
+| `test:smoke` | PR gate — oba lane | mutating serial |
 
 ### Struktura
 

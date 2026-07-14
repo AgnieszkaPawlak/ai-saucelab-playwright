@@ -17,12 +17,12 @@ const loginNegativeCases = [
   {
     id: 'TC-L3-NEG-004',
     username: 'bad_user',
-    password: credentials.standardPassword,
+    password: credentials.password,
     expectedError: 'do not match any user in this service',
   },
 ] as const;
 
-test.describe('Regression — Login @regression', () => {
+test.describe('Regression — Login @regression @readonly', () => {
   test.beforeEach(async ({ loginPage }) => {
     await loginPage.goto();
   });

@@ -3,7 +3,7 @@ import { CART_STATES } from '../../data/cart-states';
 import { checkoutCustomer, DEFAULT_CUSTOMER } from '../../data/checkout-data';
 import { PRODUCTS } from '../../data/products';
 
-test.describe('Regression — Checkout @regression', () => {
+test.describe('Regression — Checkout @regression @mutating', () => {
   test.beforeEach(async ({ loginAsStandardUser, resetAppState }) => {
     await loginAsStandardUser();
     await resetAppState();

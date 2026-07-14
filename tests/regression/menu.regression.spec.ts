@@ -1,7 +1,7 @@
 import { test, expect } from '../../fixtures/sauce.fixture';
 import { PRODUCTS } from '../../data/products';
 
-test.describe('Regression — Menu @regression', () => {
+test.describe('Regression — Menu @regression @mutating', () => {
   test('TC-L3-FUNC-017: logout returns to login page', async ({ loginAsStandardUser, sidebar, loginPage }) => {
     await loginAsStandardUser();
     await sidebar.logout();

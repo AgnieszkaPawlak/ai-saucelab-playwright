@@ -7,7 +7,7 @@ import {
 import { PRODUCTS } from '../../data/products';
 import { USERS } from '../../data/users';
 
-test.describe('Characterization — Personas @characterization', () => {
+test.describe('Characterization — Personas @characterization @mutating', () => {
   test('TC-L3-PERS-001: problem_user shows broken product images', async ({
     loginAs,
     inventoryPage,

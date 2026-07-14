@@ -2,7 +2,7 @@ import { test, expect } from '../../fixtures/sauce.fixture';
 import { PRODUCTS } from '../../data/products';
 import { USERS } from '../../data/users';
 
-test.describe('NF — Cross-browser @nf-cross-browser', () => {
+test.describe('NF — Cross-browser @nf-cross-browser @mutating', () => {
   test('TC-L3-NF5-001: standard_user reaches inventory after login', async ({
     authFlow,
     inventoryPage,

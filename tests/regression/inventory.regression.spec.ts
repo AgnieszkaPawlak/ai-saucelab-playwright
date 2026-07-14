@@ -28,7 +28,7 @@ const sortRegressionCases = [
   },
 ] as const;
 
-test.describe('Regression — Inventory @regression', () => {
+test.describe('Regression — Inventory @regression @mutating', () => {
   test.beforeEach(async ({ loginAsStandardUser, resetAppState }) => {
     await loginAsStandardUser();
     await resetAppState();

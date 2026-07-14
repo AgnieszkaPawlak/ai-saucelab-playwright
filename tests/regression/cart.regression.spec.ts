@@ -2,7 +2,7 @@ import { test, expect } from '../../fixtures/sauce.fixture';
 import { CART_STATES } from '../../data/cart-states';
 import { PRODUCTS } from '../../data/products';
 
-test.describe('Regression — Cart @regression', () => {
+test.describe('Regression — Cart @regression @mutating', () => {
   test.beforeEach(async ({ loginAsStandardUser, resetAppState }) => {
     await loginAsStandardUser();
     await resetAppState();

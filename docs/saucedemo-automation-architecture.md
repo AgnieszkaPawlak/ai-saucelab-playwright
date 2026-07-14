@@ -1,6 +1,6 @@
 # SauceDemo — architektura automatyzacji testów
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Date:** 2026-07-14  
 **Author:** Senior QA Architect  
 **Status:** Zatwierdzony do implementacji fazowej  
@@ -46,7 +46,7 @@ SauceDemo (Swag Labs) to statyczna SPA bez publicznego REST API. Stan koszyka i 
 | Ograniczenie | Wpływ na design |
 |--------------|-----------------|
 | Brak API | Testy wyłącznie UI/E2E; brak warstwy API client |
-| Współdzielone demo | `workers: 1`, `fullyParallel: false`, reset przed mutacją |
+| Współdzielone demo | Two-lane: `@readonly` równolegle, `@mutating` serial (`workers: 1`); reset przed mutacją |
 | 6 person demo | Osobne suite'y charakteryzacyjne; `standard_user` chroni regresję |
 | Brak kodu źródłowego aplikacji | Lokatory oparte na `data-test` (preferowane) i stabilnych ID |
 
@@ -447,14 +447,20 @@ stateDiagram-v2
     Assert --> [*]
 ```
 
-### 8.3 Konfiguracja Playwright (bez zmian w Phase 1)
+### 8.3 Konfiguracja Playwright i wykonywanie two-lane
 
 | Parametr | Wartość | Uzasadnienie |
 |----------|---------|--------------|
-| `workers` | `1` | Współdzielone demo; unikanie race na stanie koszyka |
-| `fullyParallel` | `false` | j.w. |
+| `@readonly` | `workers: 4` (npm `test:readonly`) | Testy bez mutacji koszyka/sesji `standard_user` |
+| `@mutating` | `workers: 1` (npm `test:mutating`) | Koszyk/checkout/inventory — jedno konto `standard_user` |
+| `fullyParallel` | `true` | Bezpieczne w lane readonly |
 | `retries` | `1` (CI) / `0` (local) | Łagodzenie transient failures na publicznym demo |
 | `baseURL` | `process.env.BASE_URL` | Zgodność z `.env.example` |
+| Hasło | `process.env.SAUCE_PASSWORD` | Lokalnie `.env`; CI → `secrets.SAUCE_PASSWORD` (plan §13) |
+
+**Lane readonly:** login negatywny, locked_out, NF security/performance (bez koszyka).  
+**Lane mutating:** smoke/regression cart+checkout, characterization, NF a11y/cross-browser.  
+**PR gate (`test:smoke`):** oba lane, mutating serial — stabilność PR.
 
 ---
 
@@ -634,7 +640,7 @@ gantt
 | AR-02 | Zbyt wczesny split CheckoutPage | Średnia | Niski | Odroczenie do Phase 2 (ten dokument) |
 | AR-03 | Over-engineering przed regression | Średnia | Średni | Phase 1 ograniczona do 5 nowych plików |
 | AR-04 | Niespójność lokatorów login (#id) vs reszta (data-test) | Niska | Niski | Login stabilny; dokumentacja §10 |
-| AR-05 | Równoległość na demo | Wysoka | Wysoki | `workers: 1` — bez zmian do odcięcia środowiska |
+| AR-05 | Równoległość na demo | Wysoka | Wysoki | Two-lane `@readonly`/`@mutating`; pełna równoległość dopiero po odcięciu środowiska |
 
 ---
 
@@ -674,6 +680,7 @@ flowchart LR
 | D-01 | Logout w smoke checkout? | A) Tak — pełny flow planu · B) Nie — stop na complete | **B** w Phase 1; logout jako osobny TC w Phase 2 |
 | D-02 | Przeniesienie `SidebarComponent` do `components/` | A) Tak · B) Zostaw w `pages/` | **A** — zgodność z planem i SRP |
 | D-03 | Split `CheckoutPage` w Phase 1 | A) Tak · B) Nie | **B** — odroczenie do Phase 2 |
+| D-04 | Równoległość na shared demo | A) Global parallel · B) Two-lane · C) Serial | **B** — `@readonly`/`@mutating`; regresja na `standard_user` |
 
 ---
 
@@ -682,6 +689,7 @@ flowchart LR
 | Wersja | Data | Autor | Zmiany |
 |--------|------|-------|--------|
 | 1.0 | 2026-07-14 | Senior QA Architect | Wersja inicjalna — audyt scaffold, Phase 1–3, SOLID, wzorce |
+| 1.1 | 2026-07-14 | Senior QA Architect | Two-lane parallel, `SAUCE_PASSWORD` via env/secrets |
 
 ---
 

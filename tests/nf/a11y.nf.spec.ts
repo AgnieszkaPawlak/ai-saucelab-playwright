@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from '../../fixtures/sauce.fixture';
 import { CART_STATES } from '../../data/cart-states';
 
-test.describe('NF — Accessibility @nf-a11y', () => {
+test.describe('NF — Accessibility @nf-a11y @readonly', () => {
   test('TC-L3-S1-001: login page has no critical axe violations', async ({ loginPage, page }) => {
     await loginPage.goto();
 
@@ -16,7 +16,9 @@ test.describe('NF — Accessibility @nf-a11y', () => {
 
     expect(criticalViolations).toEqual([]);
   });
+});
 
+test.describe('NF — Accessibility @nf-a11y @mutating', () => {
   test('TC-L3-S1-002: checkout step one has no critical axe violations', async ({
     loginAsStandardUser,
     resetAppState,

@@ -14,22 +14,20 @@ export type DemoUser = {
   password: string;
 };
 
-const DEFAULT_PASSWORD = credentials.standardPassword;
-
 const USERNAME_BY_PERSONA: Record<UserPersona, string> = {
   standard: credentials.standardUser,
   locked_out: credentials.lockedOutUser,
-  problem: process.env.PROBLEM_USER ?? 'problem_user',
-  performance_glitch: process.env.PERFORMANCE_GLITCH_USER ?? 'performance_glitch_user',
-  error: process.env.ERROR_USER ?? 'error_user',
-  visual: process.env.VISUAL_USER ?? 'visual_user',
+  problem: credentials.problemUser,
+  performance_glitch: credentials.performanceGlitchUser,
+  error: credentials.errorUser,
+  visual: credentials.visualUser,
 };
 
 export function getUser(persona: UserPersona): DemoUser {
   return {
     persona,
     username: USERNAME_BY_PERSONA[persona],
-    password: DEFAULT_PASSWORD,
+    password: credentials.password,
   };
 }
 
