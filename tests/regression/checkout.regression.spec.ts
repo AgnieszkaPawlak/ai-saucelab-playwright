@@ -19,6 +19,17 @@ test.describe('Regression — Checkout @regression @mutating', () => {
     await expect(checkoutOverview.finishButton).toBeVisible();
   });
 
+  test('TC-L3-CONF-001: checkout totals remain correct after confirmation retest', async ({
+    checkoutFlow,
+    checkoutOverview,
+  }) => {
+    await checkoutFlow.proceedToOverview(PRODUCTS.backpack.id, DEFAULT_CUSTOMER);
+
+    await expect(checkoutOverview.subtotalLabel).toHaveText('Item total: $29.99');
+    await expect(checkoutOverview.taxLabel).toHaveText('Tax: $2.40');
+    await expect(checkoutOverview.totalLabel).toHaveText('Total: $32.39');
+  });
+
   test('TC-L3-FUNC-006: checkout overview shows correct totals for backpack', async ({
     checkoutFlow,
     checkoutOverview,

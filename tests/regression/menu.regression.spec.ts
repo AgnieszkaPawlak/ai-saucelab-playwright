@@ -2,9 +2,19 @@ import { test, expect } from '../../fixtures/sauce.fixture';
 import { PRODUCTS } from '../../data/products';
 
 test.describe('Regression — Menu @regression @mutating', () => {
-  test('TC-L3-FUNC-017: logout returns to login page', async ({ loginAsStandardUser, sidebar, loginPage }) => {
+  test('TC-L3-FUNC-017: logout returns to login page and blocks back navigation', async ({
+    loginAsStandardUser,
+    sidebar,
+    loginPage,
+    page,
+  }) => {
     await loginAsStandardUser();
     await sidebar.logout();
+
+    await expect(loginPage.page).toHaveURL(/\/$/);
+    await expect(loginPage.loginButton).toBeVisible();
+
+    await page.goBack();
 
     await expect(loginPage.page).toHaveURL(/\/$/);
     await expect(loginPage.loginButton).toBeVisible();

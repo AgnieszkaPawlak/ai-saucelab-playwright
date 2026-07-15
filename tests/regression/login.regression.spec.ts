@@ -27,6 +27,15 @@ test.describe('Regression — Login @regression @readonly', () => {
     await loginPage.goto();
   });
 
+  test('TC-L3-NEG-001: locked_out_user cannot log in', async ({ loginPage }) => {
+    await loginPage.login(credentials.lockedOutUser, credentials.password);
+
+    await expect(loginPage.page).toHaveURL(/\/$/);
+    await expect(loginPage.errorMessage).toContainText(
+      'Epic sadface: Sorry, this user has been locked out.',
+    );
+  });
+
   for (const { id, username, password, expectedError } of loginNegativeCases) {
     test(`${id}: rejects invalid login credentials`, async ({ loginPage }) => {
       await loginPage.login(username, password);
@@ -35,4 +44,19 @@ test.describe('Regression — Login @regression @readonly', () => {
       await expect(loginPage.errorMessage).toContainText(expectedError);
     });
   }
+});
+
+test.describe('Regression — Login @regression @mutating', () => {
+  test('TC-L3-FUNC-001: standard_user logs in successfully', async ({
+    loginPage,
+    header,
+    inventoryPage,
+  }) => {
+    await loginPage.goto();
+    await loginPage.login(credentials.standardUser, credentials.password);
+
+    await expect(loginPage.page).toHaveURL(/inventory\.html/);
+    await expect(header.title).toHaveText('Products');
+    await expect(inventoryPage.inventoryItems).toHaveCount(6);
+  });
 });

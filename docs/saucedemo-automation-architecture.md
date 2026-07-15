@@ -20,7 +20,7 @@ Implementacja odbywa się **małymi krokami** (Phase 1 → Phase 4 + refactor). 
 | Metryka | Wartość |
 |---------|---------|
 | Smoke (`@smoke`) | 5 passed |
-| Regression (`@regression`) | **28 passed** (bramka Phase 2+; plan docelowy: 55 TC) |
+| Regression (`@regression`) | **55 passed** (bramka Phase 2+; plan docelowy: 55 TC) |
 | Characterization | 4 passed |
 | NF (chromium) | 8 passed |
 | Cross-browser NF5 | 9 passed (3 TC × 3 browsers) |
@@ -61,7 +61,7 @@ SauceDemo (Swag Labs) to statyczna SPA bez publicznego REST API. Stan koszyka i 
 | POM: checkout (split) | `CheckoutStepOnePage`, `CheckoutOverviewPage`, `CheckoutCompletePage` | done (Phase 2) |
 | POM: `SidebarComponent`, `HeaderComponent` | `components/` | done |
 | Suite Smoke (**15 TC** plan) | `tests/smoke/` | **5 TC** zautomatyzowanych (Phase 1 gate) |
-| Suite Regression (**55 TC** plan) | `tests/regression/` | **28 TC** zautomatyzowanych; ~27 TC w backlogu |
+| Suite Regression (**55 TC** plan) | `tests/regression/` | **55 TC** zautomatyzowanych |
 | Charakteryzacja person | `tests/characterization/` | 4 TC (QUIRK-001–004) |
 | NF + cross-browser | `tests/nf/` | 5 + 9 uruchomień NF5 |
 | NF6 Utrzymywalność | Ten dokument + separacja warstw + `core/selectors.ts` | done |
@@ -571,7 +571,8 @@ Test `TC-L3-SMOKE-002`:
 | `core/BasePage.ts` | Wspólne `goto`, `waitForUrl` |
 | Parametryzacja | `TC-L3-NEG-002–004`, `TC-L3-REG-001` (sort) |
 
-**Bramka Phase 2:** `npm run test:smoke` → 5 passed; `npm run test:regression` → 25 passed. **Zrealizowano 2026-07-14.**
+**Bramka Phase 2:** `npm run test:smoke` → 5 passed; `npm run test:regression` → 25 passed. **Zrealizowano 2026-07-14.**  
+**Bramka regression 55:** `npm run test:regression` → **55 passed**. **Zrealizowano 2026-07-14.**
 
 | Krok | Zadanie | Pliki | Stan |
 |------|---------|-------|------|
@@ -579,7 +580,7 @@ Test `TC-L3-SMOKE-002`:
 | 2.2 | Split checkout | `CheckoutStepOnePage`, `CheckoutOverviewPage`, `CheckoutCompletePage` | done |
 | 2.3 | `data/users.ts` + `AuthFlow` | `data/users.ts`, `flows/AuthFlow.ts` | done |
 | 2.4 | Fixture `loginAs(persona)` | `fixtures/sauce.fixture.ts` | done |
-| 2.5 | Suite regression | `tests/regression/*.spec.ts` | 25 TC |
+| 2.5 | Suite regression | `tests/regression/*.spec.ts` | **55 TC** |
 | 2.6 | Skrypt npm | `package.json` → `test:regression` | done |
 | 2.7 | Rozszerzenie regression | menu, cart, checkout, inventory | done |
 
@@ -635,10 +636,11 @@ Test `TC-L3-SMOKE-002`:
 
 | Priorytet | Zadanie | Cel | Stan |
 |-----------|---------|-----|------|
-| P1 | Rozszerzenie regression | 25 → ~55 TC (`FUNC-015/016`, `NEG-009`, …) | **w toku** — 28/55 (2026-07-14) |
+| P1 | Rozszerzenie regression | 25 → ~55 TC (`FUNC-015/016`, `NEG-009`, …) | **done** 2026-07-14 (55/55) |
 | P2 | Visual regression | `TC-L3-S2-001/002` | **done** 2026-07-14 |
+| P5 | Component contracts | `TC-L2-COMP-001..008` — [prompt](saucedemo-component-testing-prompt.md) | backlog |
 | P3 | Characterization | `TC-L3-PERS-005` | backlog |
-| P4 | Pozostałe NF | `NF1-002`, `NF2-*`, `SEC-003`, `S6-001` | backlog |
+| P4 | Pozostałe NF | `SEC-002`, `NF7-001`, `PERS-005` | backlog |
 
 ### 11.7 Visual regression (S2) — zrealizowano
 
@@ -653,7 +655,26 @@ Test `TC-L3-SMOKE-002`:
 
 **Bramka:** `npm run test:nf-visual` → 3 passed (chromium).
 
-### 11.8 Diagram roadmapy
+**Bramka regression 55:** `npm run test:regression` → 55 passed (chromium). **Zrealizowano 2026-07-14.**
+
+### 11.8 Regression expansion — zrealizowano
+
+| Plik | Zakres TC |
+|------|-----------|
+| `login.regression.spec.ts` | NEG-001–004, FUNC-001 |
+| `inventory.regression.spec.ts` | FUNC-002/003/009–013, REG-001/002, T3-001, SAN-001, NF8-001 |
+| `cart.regression.spec.ts` | FUNC-004/014, NEG-008 |
+| `checkout.regression.spec.ts` | FUNC-005–008/019/020, CONF-001, NEG-005–007/009 |
+| `menu.regression.spec.ts` | FUNC-015–018 |
+| `session.regression.spec.ts` | NF2-001/002, S6-001 |
+| `persona.regression.spec.ts` | PERS-001–004 |
+| `performance.regression.spec.ts` | NF1-001/002 |
+| `a11y.regression.spec.ts` | S1-001/002 |
+| `security.regression.spec.ts` | SEC-001/003 |
+| `deploy.regression.spec.ts` | S5-001 |
+| `smoke-coverage.regression.spec.ts` | SMOKE-001/002, NF5-001 |
+
+### 11.9 Diagram roadmapy
 
 ```mermaid
 gantt

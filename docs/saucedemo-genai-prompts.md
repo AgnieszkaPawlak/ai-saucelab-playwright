@@ -147,6 +147,8 @@
 | PAT-REG-01 | Reasoning |
 | PAT-IMPL-01 | Instruction-tuned z kodem |
 | PAT-VISUAL-01 | Instruction-tuned z kodem (visual snapshots) — [saucedemo-visual-regression-prompt.md](saucedemo-visual-regression-prompt.md) |
+| PAT-COMP-01 | Reasoning (planowanie strategii) — [saucedemo-component-testing-prompt.md](saucedemo-component-testing-prompt.md) |
+| PAT-COMP-02 | Instruction-tuned z kodem (UI component contracts) — [saucedemo-component-testing-prompt.md](saucedemo-component-testing-prompt.md) |
 | PAT-REPORT-01 | Instruction-tuned |
 
 ---
@@ -157,4 +159,5 @@
 |--------|------|--------|
 | 1.0 | 2026-07-14 | Początkowa biblioteka dla planu SauceDemo |
 | 1.1 | 2026-07-14 | PAT-VISUAL-01 — visual regression S2-001/002 |
+| 1.2 | 2026-07-14 | PAT-COMP-01/02 — component testing COMP-001..008 |
 | 1.1 | 2026-07-14 | Tłumaczenie na polski |
